@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
@@ -8,8 +8,11 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import { useSession } from "../../../ctx";
 
 export default function TabTwoScreen() {
+  const { session } = useSession();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -23,12 +26,39 @@ export default function TabTwoScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <Text style={{ color: "red" }}>estoy aca!</Text>
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
+
+      <ThemedView style={styles.protectedNotice}>
+        <ThemedText type="subtitle">Protected Content</ThemedText>
+        <ThemedText>
+          Welcome,{" "}
+          <ThemedText type="defaultSemiBold">{session?.user?.name}</ThemedText>!
+          This explore section contains protected content only available to
+          authenticated users.
+        </ThemedText>
+      </ThemedView>
+
       <ThemedText>
         This app includes example code to help you get started.
       </ThemedText>
+
+      <Collapsible title="Protected Features">
+        <ThemedText>As an authenticated user, you have access to:</ThemedText>
+        <ThemedText>
+          • <ThemedText type="defaultSemiBold">Dashboard</ThemedText> - Your
+          personalized home
+        </ThemedText>
+        <ThemedText>
+          • <ThemedText type="defaultSemiBold">Profile Management</ThemedText> -
+          Update your account
+        </ThemedText>
+        <ThemedText>
+          • <ThemedText type="defaultSemiBold">Secure Navigation</ThemedText> -
+          Protected routes
+        </ThemedText>
+      </Collapsible>
+
       <Collapsible title="File-based routing">
         <ThemedText>
           This app has two screens:{" "}
@@ -45,6 +75,7 @@ export default function TabTwoScreen() {
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
       </Collapsible>
+
       <Collapsible title="Android, iOS, and web support">
         <ThemedText>
           You can open this project on Android, iOS, and the web. To open the
@@ -52,6 +83,7 @@ export default function TabTwoScreen() {
           in the terminal running this project.
         </ThemedText>
       </Collapsible>
+
       <Collapsible title="Images">
         <ThemedText>
           For static images, you can use the{" "}
@@ -67,6 +99,7 @@ export default function TabTwoScreen() {
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
       </Collapsible>
+
       <Collapsible title="Custom fonts">
         <ThemedText>
           Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
@@ -79,6 +112,7 @@ export default function TabTwoScreen() {
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
       </Collapsible>
+
       <Collapsible title="Light and dark mode components">
         <ThemedText>
           This template has light and dark mode support. The{" "}
@@ -90,6 +124,7 @@ export default function TabTwoScreen() {
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
       </Collapsible>
+
       <Collapsible title="Animations">
         <ThemedText>
           This template includes an example of an animated component. The{" "}
@@ -128,5 +163,11 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+  },
+  protectedNotice: {
+    backgroundColor: "#e8f5e8",
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
   },
 });
