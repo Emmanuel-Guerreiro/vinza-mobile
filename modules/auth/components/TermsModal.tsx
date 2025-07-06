@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.xl,
-    padding: Spacing["4xl"],
+    padding: Spacing["lg"],
     width: "90%",
     maxHeight: "80%",
     alignItems: "center",

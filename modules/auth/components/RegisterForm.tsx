@@ -1,5 +1,9 @@
 import { Colors } from "@/constants/Colors";
 import { BorderRadius, Spacing } from "@/constants/Spacing";
+import { useSession } from "@/lib/context";
+import { TermsModal } from "@/modules/auth/components/TermsModal";
+import { RegisterRequestSchema } from "@/modules/auth/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -11,14 +15,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSession } from "../../ctx";
-import { TermsModal } from "../ui/TermsModal";
+import { z } from "zod";
 
 interface RegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
 }
+
+// Extend RegisterRequestSchema to include confirmPassword and match password
+const RegisterFormSchema = RegisterRequestSchema.extend({
+  confirmPassword: z.string().min(1, "Confirma tu contraseña"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+});
 
 export const RegisterForm: React.FC = () => {
   const { signUp } = useSession();
@@ -27,9 +38,9 @@ export const RegisterForm: React.FC = () => {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormData>({
+  } = useForm({
+    resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -37,13 +48,15 @@ export const RegisterForm: React.FC = () => {
     },
   });
 
-  const password = watch("password");
-
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await signUp(data.email, data.password, data.email.split("@")[0]);
+      await signUp({
+        email: data.email,
+        password: data.password,
+        name: data.email.split("@")[0],
+      });
       router.replace("/(app)/(tabs)/explore");
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to sign up");
     }
   };
@@ -55,13 +68,6 @@ export const RegisterForm: React.FC = () => {
         <Controller
           control={control}
           name="email"
-          rules={{
-            required: "El correo electrónico es requerido",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Ingresa un correo electrónico válido",
-            },
-          }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={[styles.input, errors.email && styles.inputError]}
@@ -85,13 +91,6 @@ export const RegisterForm: React.FC = () => {
         <Controller
           control={control}
           name="password"
-          rules={{
-            required: "La contraseña es requerida",
-            minLength: {
-              value: 6,
-              message: "La contraseña debe tener al menos 6 caracteres",
-            },
-          }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={[styles.input, errors.password && styles.inputError]}
@@ -114,11 +113,6 @@ export const RegisterForm: React.FC = () => {
         <Controller
           control={control}
           name="confirmPassword"
-          rules={{
-            required: "Confirma tu contraseña",
-            validate: (value) =>
-              value === password || "Las contraseñas no coinciden",
-          }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={[

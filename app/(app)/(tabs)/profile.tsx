@@ -1,10 +1,8 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useSession } from "../../../ctx";
+import { useSession } from "../../../lib/context";
 
 export default function ProfileScreen() {
   const { session, signOut } = useSession();
@@ -28,31 +26,31 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title">Profile</ThemedText>
-        <ThemedText type="subtitle">Welcome back!</ThemedText>
-      </ThemedView>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.titleText}>Profile</Text>
+        <Text style={styles.subtitleText}>Welcome back!</Text>
+      </View>
 
-      <ThemedView style={styles.userInfo}>
-        <ThemedText type="subtitle">User Information</ThemedText>
-        <ThemedText>Name: {session?.user?.name}</ThemedText>
-        <ThemedText>Email: {session?.user?.email}</ThemedText>
-      </ThemedView>
+      <View style={styles.userInfo}>
+        <Text style={styles.subtitleText}>User Information</Text>
+        <Text>Name: {session?.nombre}</Text>
+        <Text>Email: {session?.email}</Text>
+      </View>
 
-      <ThemedView style={styles.section}>
-        <ThemedText type="subtitle">Protected Content</ThemedText>
-        <ThemedText>
+      <View style={styles.section}>
+        <Text style={styles.subtitleText}>Protected Content</Text>
+        <Text>
           This is a protected page that only authenticated users can access. You
           can navigate between the Home and Explore tabs, and manage your
           profile here.
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <ThemedText style={styles.signOutText}>Sign Out</ThemedText>
+        <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
-    </ThemedView>
+    </View>
   );
 }
 
@@ -64,6 +62,15 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     marginBottom: 30,
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  subtitleText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
   },
   userInfo: {
     backgroundColor: "#f0f0f0",

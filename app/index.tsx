@@ -1,116 +1,155 @@
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { useSession } from "../lib/context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { session, isLoading } = useSession();
+
+  // Redirect authenticated users to the internal app
+  useEffect(() => {
+    if (!isLoading && session) {
+      router.replace("/(app)/(tabs)");
+    }
+  }, [session, isLoading, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return null;
+  }
+
+  // Don't render if user is authenticated (they'll be redirected)
+  if (session) {
+    return null;
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      </ThemedView>
+    <View style={styles.container}>
+      {/* Top Section with Logo and Text */}
+      <View style={styles.topSection}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoText}>V</Text>
+          </View>
+          <Text style={styles.brandText}>VINZA</Text>
+        </View>
 
-      <ThemedView style={styles.content}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Welcome!</ThemedText>
-          <HelloWave />
-        </ThemedView>
+        <View style={styles.titleContainer}>
+          <Text style={styles.mainTitle}>
+            Conoce{"\n"}la{" "}
+            <Text style={styles.experienciaText}>experiencia</Text>
+            {"\n"}del vino
+          </Text>
+        </View>
+      </View>
 
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">Get Started</ThemedText>
-          <ThemedText>
-            Welcome to our app! This is the public home page that anyone can
-            access.
-          </ThemedText>
-        </ThemedView>
+      {/* Bottom Section */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/auth?mode=login")}
+        >
+          <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
 
-        <ThemedView style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/auth?mode=login")}
-          >
-            <ThemedText style={styles.buttonText}>Sign In</ThemedText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
-            onPress={() => router.push("/auth?mode=register")}
-          >
-            <ThemedText style={styles.secondaryButtonText}>Sign Up</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">Protected Content</ThemedText>
-          <ThemedText>
-            After signing in, you&apos;ll have access to protected content and
-            features.
-          </ThemedText>
-        </ThemedView>
-      </ThemedView>
-    </ScrollView>
+        <TouchableOpacity
+          onPress={() => router.push("/auth?mode=register")}
+          style={styles.registerContainer}
+        >
+          <Text style={styles.registerText}>
+            ¿Aún no tienes cuenta?{" "}
+            <Text style={styles.registerLink}>Regístrate</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#8B1538", // Wine red background
+    paddingHorizontal: 20, // Horizontal padding (well above the minimum of 4)
+    paddingTop: 60, // Top padding for status bar
   },
-  header: {
-    height: 200,
-    backgroundColor: "#A1CEDC",
-    justifyContent: "center",
+  topSection: {
+    flex: 1,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
+  logoContainer: {
     alignItems: "center",
-    position: "relative",
+    marginTop: 60,
+    marginBottom: 10,
+    alignSelf: "flex-start",
   },
-  content: {
-    padding: 20,
+  logoCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  logoText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#8B1538",
+  },
+  brandText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#fff",
+    letterSpacing: 1.5,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 20,
+    alignSelf: "flex-start",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    gap: 12,
-    marginVertical: 20,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  secondaryButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#007AFF",
-  },
-  buttonText: {
+  mainTitle: {
+    fontSize: 32,
+    fontWeight: "300",
     color: "#fff",
+    textAlign: "left",
+    lineHeight: 40,
+  },
+  experienciaText: {
+    fontSize: 32,
+    fontWeight: "300",
+    color: "#FF69B4", // Pink color for "experiencia"
+    lineHeight: 40,
+  },
+  bottomContainer: {
+    paddingBottom: 60, // Increased bottom padding
+    paddingHorizontal: 20,
+  },
+  loginButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  loginButtonText: {
+    color: "#8B1538",
     fontSize: 16,
     fontWeight: "600",
   },
-  secondaryButtonText: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
+  registerContainer: {
+    alignItems: "center",
   },
-  reactLogo: {
-    height: 100,
-    width: 160,
+  registerText: {
+    color: "#fff",
+    fontSize: 14,
+  },
+  registerLink: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
 });

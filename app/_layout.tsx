@@ -10,12 +10,13 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { SessionProvider, useSession } from "../ctx";
+import { SessionProvider, useSession } from "../lib/context";
 import { SplashScreenController } from "../splash";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 

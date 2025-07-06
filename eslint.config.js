@@ -1,10 +1,41 @@
-// https://docs.expo.dev/guides/using-eslint/
 const { defineConfig } = require('eslint/config');
-const expoConfig = require('eslint-config-expo/flat');
+
+const tsParser = require('@typescript-eslint/parser');
+const typescriptEslint = require('@typescript-eslint/eslint-plugin');
+const globals = require('globals');
+const js = require('@eslint/js');
+
+const { FlatCompat } = require('@eslint/eslintrc');
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
 
 module.exports = defineConfig([
-  expoConfig,
   {
-    ignores: ['dist/*'],
+    languageOptions: {
+      parser: tsParser,
+
+      globals: {
+        ...globals.node,
+      },
+    },
+
+    plugins: {
+      '@typescript-eslint': typescriptEslint,
+    },
+
+    extends: compat.extends(
+      'eslint:recommended',
+      'plugin:@typescript-eslint/recommended',
+      'prettier',
+    ),
+
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      'no-console': 'error',
+    },
   },
 ]);

@@ -1,6 +1,8 @@
 import { Colors } from "@/constants/Colors";
 import { BorderRadius, Spacing } from "@/constants/Spacing";
-import { useRouter } from "expo-router";
+import { useSession } from "@/lib/context";
+import { LoginRequestSchema } from "@/modules/auth/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -11,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSession } from "../../ctx";
 
 interface LoginFormData {
   email: string;
@@ -20,12 +21,12 @@ interface LoginFormData {
 
 export const LoginForm: React.FC = () => {
   const { signIn } = useSession();
-  const router = useRouter();
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
+  } = useForm({
+    resolver: zodResolver(LoginRequestSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -34,9 +35,11 @@ export const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await signIn(data.email, data.password);
-      router.replace("/(app)/(tabs)/explore");
+      await signIn(data);
+      // router.replace("/(app)/(tabs)/explore");
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log("error", error);
       Alert.alert("Error", "Failed to sign in");
     }
   };
@@ -47,13 +50,6 @@ export const LoginForm: React.FC = () => {
       <Controller
         control={control}
         name="email"
-        rules={{
-          required: "El correo electrónico es requerido",
-          pattern: {
-            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Ingresa un correo electrónico válido",
-          },
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={[styles.input, errors.email && styles.inputError]}
@@ -75,13 +71,6 @@ export const LoginForm: React.FC = () => {
       <Controller
         control={control}
         name="password"
-        rules={{
-          required: "La contraseña es requerida",
-          minLength: {
-            value: 6,
-            message: "La contraseña debe tener al menos 6 caracteres",
-          },
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={[styles.input, errors.password && styles.inputError]}

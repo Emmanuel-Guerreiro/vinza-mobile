@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { useSession } from "../../ctx";
+import { useSession } from "../../lib/context";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();

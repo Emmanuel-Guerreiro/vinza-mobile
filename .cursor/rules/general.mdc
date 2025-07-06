@@ -1,0 +1,84 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # Cursor Rules - Code Quality Guidelines
+
+## Core Principles
+
+### 1. Directness Over Abstraction
+- **Always prefer direct usage over unnecessary wrapper functions**
+- **Avoid creating "convenience" functions that just call other functions**
+- **Use services and utilities directly instead of creating intermediate layers**
+- **Don't create abstractions unless they solve a real problem**
+
+### 2. No Barrel Files (Index Files)
+- **Never create index.ts files that just re-export other modules**
+- **Import directly from the source files**
+- **Avoid `export * from` patterns**
+- **Don't create "clean import paths" at the cost of indirection**
+
+### 3. Minimal Documentation
+- **Avoid creating README files for simple modules**
+- **Only create documentation when it adds real value**
+- **Prefer self-documenting code over extensive comments**
+- **Don't document obvious functionality**
+
+### 4. Eliminate Unnecessary Indirection
+- **Don't create wrapper functions that just call other functions**
+- **Avoid "helper" functions that don't add logic**
+- **Use the original API directly instead of creating "improved" versions**
+- **Don't abstract simple operations into complex systems**
+
+## Specific Rules
+
+### File Structure
+- Import directly: `import { MyComponent } from "./components/MyComponent"`
+- Not: `import { MyComponent } from "./components"`
+
+### Function Design
+- Use services directly: `storageService.getAuthToken()`
+- Not: `getAuthToken()` (wrapper function)
+
+### Module Organization
+- Keep related code together
+- Don't split simple functionality across multiple files
+- Avoid creating "utility" files for single-use functions
+
+### Code Examples
+```typescript
+// ✅ Good - Direct usage
+import { storageService } from "@/lib/storage";
+storageService.setAuthToken(token);
+
+// ❌ Bad - Unnecessary wrapper
+import { setAuthToken } from "@/lib/api";
+setAuthToken(token);
+```
+
+```typescript
+// ✅ Good - Direct import
+import { MyComponent } from "./MyComponent";
+
+// ❌ Bad - Barrel file
+import { MyComponent } from "./index";
+```
+
+## When to Break These Rules
+
+Only create abstractions, barrel files, or documentation when:
+1. **There's a genuine performance benefit**
+2. **The abstraction solves a real architectural problem**
+3. **The documentation explains complex business logic**
+4. **The indirection is required by external constraints**
+
+## Code Review Checklist
+
+Before suggesting changes, ask:
+- Does this abstraction add real value?
+- Could this be done more directly?
+- Is this README actually needed?
+- Does this barrel file serve a purpose beyond "clean imports"?
+
+Remember: **Simple, direct code is better than clever, abstracted code.**

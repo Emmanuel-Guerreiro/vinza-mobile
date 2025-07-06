@@ -1,14 +1,12 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
-import { useSession } from "../../../ctx";
+import { useSession } from "../../../lib/context";
 
 export default function TabTwoScreen() {
   const { session } = useSession();
@@ -25,127 +23,120 @@ export default function TabTwoScreen() {
         />
       }
     >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Explore</Text>
+      </View>
 
-      <ThemedView style={styles.protectedNotice}>
-        <ThemedText type="subtitle">Protected Content</ThemedText>
-        <ThemedText>
-          Welcome,{" "}
-          <ThemedText type="defaultSemiBold">{session?.user?.name}</ThemedText>!
-          This explore section contains protected content only available to
+      <View style={styles.protectedNotice}>
+        <Text style={styles.subtitleText}>Protected Content</Text>
+        <Text>
+          Welcome, <Text style={styles.boldText}>{session?.nombre}</Text>! This
+          explore section contains protected content only available to
           authenticated users.
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
 
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
+      <Text>This app includes example code to help you get started.</Text>
 
       <Collapsible title="Protected Features">
-        <ThemedText>As an authenticated user, you have access to:</ThemedText>
-        <ThemedText>
-          • <ThemedText type="defaultSemiBold">Dashboard</ThemedText> - Your
-          personalized home
-        </ThemedText>
-        <ThemedText>
-          • <ThemedText type="defaultSemiBold">Profile Management</ThemedText> -
-          Update your account
-        </ThemedText>
-        <ThemedText>
-          • <ThemedText type="defaultSemiBold">Secure Navigation</ThemedText> -
-          Protected routes
-        </ThemedText>
+        <Text>As an authenticated user, you have access to:</Text>
+        <Text>
+          • <Text style={styles.boldText}>Dashboard</Text> - Your personalized
+          home
+        </Text>
+        <Text>
+          • <Text style={styles.boldText}>Profile Management</Text> - Update
+          your account
+        </Text>
+        <Text>
+          • <Text style={styles.boldText}>Secure Navigation</Text> - Protected
+          routes
+        </Text>
       </Collapsible>
 
       <Collapsible title="File-based routing">
-        <ThemedText>
+        <Text>
           This app has two screens:{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          and{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
+          <Text style={styles.boldText}>app/(tabs)/index.tsx</Text> and{" "}
+          <Text style={styles.boldText}>app/(tabs)/explore.tsx</Text>
+        </Text>
+        <Text>
           The layout file in{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{" "}
-          sets up the tab navigator.
-        </ThemedText>
+          <Text style={styles.boldText}>app/(tabs)/_layout.tsx</Text> sets up
+          the tab navigator.
+        </Text>
         <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
+          <Text style={styles.linkText}>Learn more</Text>
         </ExternalLink>
       </Collapsible>
 
       <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
+        <Text>
           You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{" "}
-          in the terminal running this project.
-        </ThemedText>
+          web version, press <Text style={styles.boldText}>w</Text> in the
+          terminal running this project.
+        </Text>
       </Collapsible>
 
       <Collapsible title="Images">
-        <ThemedText>
+        <Text>
           For static images, you can use the{" "}
-          <ThemedText type="defaultSemiBold">@2x</ThemedText> and{" "}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to
-          provide files for different screen densities
-        </ThemedText>
+          <Text style={styles.boldText}>@2x</Text> and{" "}
+          <Text style={styles.boldText}>@3x</Text> suffixes to provide files for
+          different screen densities
+        </Text>
         <Image
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           source={require("@/assets/images/react-logo.png")}
           style={{ alignSelf: "center" }}
         />
         <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
+          <Text style={styles.linkText}>Learn more</Text>
         </ExternalLink>
       </Collapsible>
 
       <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
-          to see how to load{" "}
-          <ThemedText style={{ fontFamily: "SpaceMono" }}>
+        <Text>
+          Open <Text style={styles.boldText}>app/_layout.tsx</Text> to see how
+          to load{" "}
+          <Text style={{ fontFamily: "SpaceMono" }}>
             custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
+          </Text>
+        </Text>
         <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
+          <Text style={styles.linkText}>Learn more</Text>
         </ExternalLink>
       </Collapsible>
 
       <Collapsible title="Light and dark mode components">
-        <ThemedText>
+        <Text>
           This template has light and dark mode support. The{" "}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook
-          lets you inspect what the user&apos;s current color scheme is, and so
-          you can adjust UI colors accordingly.
-        </ThemedText>
+          <Text style={styles.boldText}>useColorScheme()</Text> hook lets you
+          inspect what the user&apos;s current color scheme is, and so you can
+          adjust UI colors accordingly.
+        </Text>
         <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
+          <Text style={styles.linkText}>Learn more</Text>
         </ExternalLink>
       </Collapsible>
 
       <Collapsible title="Animations">
-        <ThemedText>
+        <Text>
           This template includes an example of an animated component. The{" "}
-          <ThemedText type="defaultSemiBold">
-            components/HelloWave.tsx
-          </ThemedText>{" "}
+          <Text style={styles.boldText}>components/HelloWave.tsx</Text>{" "}
           component uses the powerful{" "}
-          <ThemedText type="defaultSemiBold">
-            react-native-reanimated
-          </ThemedText>{" "}
-          library to create a waving hand animation.
-        </ThemedText>
+          <Text style={styles.boldText}>react-native-reanimated</Text> library
+          to create a waving hand animation.
+        </Text>
         {Platform.select({
           ios: (
-            <ThemedText>
+            <Text>
               The{" "}
-              <ThemedText type="defaultSemiBold">
+              <Text style={styles.boldText}>
                 components/ParallaxScrollView.tsx
-              </ThemedText>{" "}
+              </Text>{" "}
               component provides a parallax effect for the header image.
-            </ThemedText>
+            </Text>
           ),
         })}
       </Collapsible>
@@ -163,6 +154,22 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  subtitleText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  boldText: {
+    fontWeight: "600",
+  },
+  linkText: {
+    color: Colors.light.primary,
+    textDecorationLine: "underline",
   },
   protectedNotice: {
     backgroundColor: "#e8f5e8",
