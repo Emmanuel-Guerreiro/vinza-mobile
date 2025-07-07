@@ -1,3 +1,4 @@
+import { parseApiError } from "../error";
 import { storageService } from "../storage";
 
 // Enhanced fetch function that maintains the same interface as native fetch
@@ -7,7 +8,7 @@ export const apiFetch = async (
 ): Promise<Response> => {
   const headers = new Headers(init?.headers);
 
-  const token = storageService.getSession()?.token;
+  const token = (await storageService.getSession())?.token;
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
@@ -21,7 +22,16 @@ export const apiFetch = async (
     ...init,
     headers,
   };
-  return fetch(`${process.env.EXPO_PUBLIC_API_URL}${input}`, enhancedInit);
+  const response = await fetch(
+    `${process.env.EXPO_PUBLIC_API_URL}${input}`,
+    enhancedInit,
+  );
+
+  if (!response.ok) {
+    const error = await parseApiError(response);
+    throw error;
+  }
+  return response;
 };
 
 export type ApiFetchFunction = typeof apiFetch;

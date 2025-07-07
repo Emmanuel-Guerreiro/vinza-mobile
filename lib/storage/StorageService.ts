@@ -1,6 +1,6 @@
 import { STORAGE_KEYS, StorageKey } from "@/constants/StorageKeys";
 import { UserLogged } from "@/modules/auth/types";
-import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export class StorageService {
   private static instance: StorageService;
@@ -14,50 +14,37 @@ export class StorageService {
     return StorageService.instance;
   }
 
-  public getItem(key: StorageKey): string | null {
-    if (Platform.OS === "web") {
-      return localStorage.getItem(key);
-    }
-    // For native platforms, you'd use AsyncStorage or similar
-    return null;
+  public async getItem(key: StorageKey): Promise<string | null> {
+    return await AsyncStorage.getItem(key);
   }
 
-  public setItem(key: StorageKey, value: string): void {
-    if (Platform.OS === "web") {
-      localStorage.setItem(key, value);
-    }
-    // For native platforms, you'd use AsyncStorage or similar
+  public async setItem(key: StorageKey, value: string): Promise<void> {
+    await AsyncStorage.setItem(key, value);
   }
 
-  public removeItem(key: StorageKey): void {
-    if (Platform.OS === "web") {
-      localStorage.removeItem(key);
-    }
-    // For native platforms, you'd use AsyncStorage or similar
+  public async removeItem(key: StorageKey): Promise<void> {
+    await AsyncStorage.removeItem(key);
   }
 
-  public clear(): void {
-    if (Platform.OS === "web") {
-      localStorage.clear();
-    }
-    // For native platforms, you'd use AsyncStorage or similar
+  public async clear(): Promise<void> {
+    await AsyncStorage.clear();
   }
 
   // Convenience methods for common operations
-  public getSession(): UserLogged | null {
-    const sessionData = this.getItem(STORAGE_KEYS.SESSION);
+  public async getSession(): Promise<UserLogged | null> {
+    const sessionData = await this.getItem(STORAGE_KEYS.SESSION);
     if (sessionData) {
       return JSON.parse(sessionData) as UserLogged;
     }
     return null;
   }
 
-  public setSession(session: UserLogged): void {
-    this.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
+  public async setSession(session: UserLogged): Promise<void> {
+    await this.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
   }
 
-  public removeSession(): void {
-    this.removeItem(STORAGE_KEYS.SESSION);
+  public async removeSession(): Promise<void> {
+    await this.removeItem(STORAGE_KEYS.SESSION);
   }
 }
 

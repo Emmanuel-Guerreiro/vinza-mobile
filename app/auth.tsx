@@ -5,11 +5,13 @@ import { RegisterForm } from "@/modules/auth/components/RegisterForm";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -27,55 +29,60 @@ export default function AuthScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <View style={styles.content}>
-        <View style={styles.avatarContainer}>
-          <View
-            style={[
-              styles.avatar,
-              {
-                backgroundColor:
-                  currentMode === "register" ? "#E5C6CC" : "#EEE",
-              },
-            ]}
-          />
-        </View>
-
-        <View style={styles.tabs}>
-          <TouchableOpacity
-            onPress={switchToLogin}
-            style={[styles.tab, currentMode === "login" && styles.tabActive]}
-          >
-            <Text
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.content}>
+          <View style={styles.avatarContainer}>
+            <View
               style={[
-                styles.tabText,
-                currentMode === "login" && styles.tabTextActive,
+                styles.avatar,
+                {
+                  backgroundColor:
+                    currentMode === "register" ? "#E5C6CC" : "#EEE",
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.tabs}>
+            <TouchableOpacity
+              onPress={switchToLogin}
+              style={[styles.tab, currentMode === "login" && styles.tabActive]}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  currentMode === "login" && styles.tabTextActive,
+                ]}
+              >
+                Iniciar sesión
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={switchToRegister}
+              style={[
+                styles.tab,
+                currentMode === "register" && styles.tabActive,
               ]}
             >
-              Iniciar sesión
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={switchToRegister}
-            style={[styles.tab, currentMode === "register" && styles.tabActive]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                currentMode === "register" && styles.tabTextActive,
-              ]}
-            >
-              Registrarme
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Text
+                style={[
+                  styles.tabText,
+                  currentMode === "register" && styles.tabTextActive,
+                ]}
+              >
+                Registrarme
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        {currentMode === "login" ? <LoginForm /> : <RegisterForm />}
-      </View>
-    </KeyboardAvoidingView>
+          {currentMode === "login" ? <LoginForm /> : <RegisterForm />}
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 

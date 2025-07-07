@@ -31,6 +31,10 @@ alwaysApply: true
 - **Use the original API directly instead of creating "improved" versions**
 - **Don't abstract simple operations into complex systems**
 
+### 5. Use apiFetch
+- **Dont use the direct fetch method for http request unless specifically required**
+- **Use the apiFetch method at @/lib/api/index.ts**
+
 ## Specific Rules
 
 ### File Structure

@@ -38,8 +38,16 @@ export async function resetPassword(token: string, password: string) {
 }
 
 export async function validateAccount(data: ValidateAccountRequest) {
-  return apiFetch("/auth/validate", {
+  const response = await apiFetch("/auth/validate", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+  return response.json() as Promise<UserLogged>;
+}
+
+export async function requestValidation(email: string) {
+  return apiFetch("/auth/request-validation", {
+    method: "POST",
+    body: JSON.stringify({ email }),
   });
 }

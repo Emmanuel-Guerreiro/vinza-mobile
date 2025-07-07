@@ -17,20 +17,19 @@ import {
 } from "react-native";
 import { z } from "zod";
 
-interface RegisterFormData {
-  email: string;
-  name: string;
-  password: string;
-  confirmPassword: string;
-}
-
 // Extend RegisterRequestSchema to include confirmPassword and match password
-const RegisterFormSchema = RegisterRequestSchema.extend({
-  confirmPassword: z.string().min(1, "Confirma tu contraseña"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Las contraseñas no coinciden",
-  path: ["confirmPassword"],
-});
+const RegisterFormSchema = RegisterRequestSchema.omit({
+  name: true,
+})
+  .extend({
+    confirmPassword: z.string().min(1, "Confirma tu contraseña"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterFormData = z.infer<typeof RegisterFormSchema>;
 
 export const RegisterForm: React.FC = () => {
   const { signUp } = useSession();
@@ -44,7 +43,6 @@ export const RegisterForm: React.FC = () => {
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
       email: "",
-      name: "",
       password: "",
       confirmPassword: "",
     },
@@ -54,7 +52,7 @@ export const RegisterForm: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     await signUp({
       email: data.email,
-      name: data.name,
+      name: data.email,
       password: data.password,
     });
     router.replace(ROUTES["VALIDATE"]);
@@ -83,28 +81,6 @@ export const RegisterForm: React.FC = () => {
         {errors.email && (
           <Text style={styles.errorText}>{errors.email.message}</Text>
         )}
-
-        <Text style={[styles.label, { marginTop: Spacing.lg }]}>Nombre</Text>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={[styles.input, errors.name && styles.inputError]}
-              placeholder="Nombre"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              keyboardType="default"
-              autoCapitalize="words"
-              placeholderTextColor={Colors.light.text.secondary}
-            />
-          )}
-        />
-        {errors.name && (
-          <Text style={styles.errorText}>{errors.name.message}</Text>
-        )}
-
         <Text style={[styles.label, { marginTop: Spacing.lg }]}>
           Contraseña
         </Text>

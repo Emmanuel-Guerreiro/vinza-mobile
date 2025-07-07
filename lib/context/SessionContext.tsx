@@ -1,9 +1,15 @@
-import { login, register } from "@/modules/auth/api";
+import {
+  login,
+  register,
+  validateAccount as validate,
+} from "@/modules/auth/api";
 import {
   LoginRequest,
   RegisterRequest,
   UserLogged,
+  ValidateAccountRequest,
 } from "@/modules/auth/types";
+import { UpdateUser } from "@/modules/user/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { storageService } from "../storage";
 
@@ -13,6 +19,8 @@ type SessionContextType = {
   signIn: (data: LoginRequest) => Promise<UserLogged>;
   signUp: (data: RegisterRequest) => Promise<UserLogged>;
   signOut: () => Promise<void>;
+  validateAccount: (data: ValidateAccountRequest) => Promise<UserLogged>;
+  updateSessionUserData: (data: UpdateUser) => void;
 };
 
 const SessionContext = createContext<SessionContextType | null>(null);
@@ -24,7 +32,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for existing session on app start
     const checkSession = async () => {
-      const sessionData = storageService.getSession();
+      const sessionData = await storageService.getSession();
       if (sessionData) {
         setSession(sessionData);
       }
@@ -41,10 +49,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       throw new Error("Invalid credentials");
     }
 
-    setSession(response);
-    storageService.setSession(response);
+    persistSession(response);
     return response;
   };
+
   const signUp = async (data: RegisterRequest) => {
     const response = await register(data);
 
@@ -52,9 +60,19 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       throw new Error("Invalid credentials");
     }
 
-    setSession(response);
-    storageService.setSession(response);
+    persistSession(response);
     return response;
+  };
+
+  const validateAccount = async (data: ValidateAccountRequest) => {
+    const response = await validate(data);
+    persistSession(response);
+    return response;
+  };
+
+  const persistSession = (session: UserLogged) => {
+    setSession(session);
+    storageService.setSession(session);
   };
 
   const signOut = async () => {
@@ -62,9 +80,22 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     storageService.removeSession();
   };
 
+  const updateSessionUserData = (data: UpdateUser) => {
+    setSession({ ...session, ...data } as UserLogged);
+    storageService.setSession({ ...session, ...data } as UserLogged);
+  };
+
   return (
     <SessionContext.Provider
-      value={{ session, isLoading, signIn, signUp, signOut }}
+      value={{
+        session,
+        isLoading,
+        signIn,
+        signUp,
+        signOut,
+        validateAccount,
+        updateSessionUserData,
+      }}
     >
       {children}
     </SessionContext.Provider>

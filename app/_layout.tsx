@@ -6,7 +6,6 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -29,9 +28,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <SessionProvider>
         <SplashScreenController />
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <RootNavigator />
-        </TouchableWithoutFeedback>
+        <RootNavigator />
       </SessionProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -50,12 +47,17 @@ function RootNavigator() {
   return (
     <Stack>
       {/* Unprotected routes - accessible to everyone */}
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="auth" options={{ headerShown: false }} />
-      <Stack.Screen name="validate" options={{ headerShown: false }} />
-
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
+      </Stack.Protected>
       {/* Protected routes - only accessible when authenticated */}
       <Stack.Protected guard={!!session}>
+        <Stack.Screen name="validate" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="complete-profile"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
       </Stack.Protected>
 

@@ -2,27 +2,38 @@ import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/Routes";
 import { BorderRadius, Spacing } from "@/constants/Spacing";
 import { useSession } from "@/lib/context";
-import { validateAccount } from "@/modules/auth/api";
+import { requestValidation } from "@/modules/auth/api";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 
 export default function ValidatePage() {
-  const { session, signOut } = useSession();
+  const { session, signOut, validateAccount } = useSession();
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
   const otpRef = useRef(null);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (resendCooldown > 0) {
+      timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
   const handleValidate = async () => {
     if (!otp || otp.length < 6) {
       setError("Por favor ingresa el código completo.");
@@ -36,16 +47,11 @@ export default function ValidatePage() {
         setLoading(false);
         return;
       }
-      const response = await validateAccount({
+      await validateAccount({
         code: otp,
         email: session.email,
       });
-      if (response.ok) {
-        router.replace(ROUTES["APP_TABS"]);
-      } else {
-        const data = await response.json();
-        setError(data?.message || "Código incorrecto.");
-      }
+      router.replace(ROUTES["COMPLETE_PROFILE"]);
     } catch {
       setError("Error al validar. Intenta de nuevo.");
     } finally {
@@ -53,9 +59,14 @@ export default function ValidatePage() {
     }
   };
 
-  const handleResend = () => {
-    // TODO: Implement resend code logic
-    Alert.alert("Reenviar código", "Funcionalidad no implementada.");
+  const handleResend = async () => {
+    if (!session?.email) {
+      setError("No se encontró el email de la sesión.");
+      return;
+    }
+    if (resendCooldown > 0) return;
+    requestValidation(session.email);
+    setResendCooldown(45);
   };
 
   const handleSignOut = async () => {
@@ -64,112 +75,156 @@ export default function ValidatePage() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "position" : undefined}
-    >
-      <View style={styles.card}>
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.content}>
+          {/* Top Section - Gray */}
+          <View style={styles.topSection}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar} />
+            </View>
+
+            <View style={styles.tabContainer}>
+              <View style={styles.tab}>
+                <Text style={styles.tabTextActive}>Validar cuenta</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Bottom Section - White */}
+          <View style={styles.bottomSection}>
+            <Text style={styles.subtitle}>
+              Escribe el código que te enviamos a{"\n"}
+              <Text style={styles.email}>{session?.email}</Text>
+            </Text>
+
+            <View style={styles.otpContainer}>
+              <OtpInput
+                ref={otpRef}
+                numberOfDigits={6}
+                focusColor={Colors.light.primary}
+                autoFocus={false}
+                onTextChange={(value) => {
+                  setOtp(value.toUpperCase());
+                }}
+                type="alphanumeric"
+                theme={{
+                  containerStyle: {
+                    marginVertical: Spacing.xl,
+                    width: "100%",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  },
+                  pinCodeContainerStyle: {
+                    borderWidth: 1,
+                    borderColor: Colors.light.text.secondary,
+                    borderRadius: BorderRadius.md,
+                    width: 45,
+                    height: 55,
+                    backgroundColor: "#fff",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderStyle: "dashed",
+                  },
+                  pinCodeTextStyle: {
+                    fontSize: 20,
+                    color: Colors.light.text.primary,
+                    fontWeight: "bold",
+                  },
+                  focusedPinCodeContainerStyle: {
+                    borderColor: Colors.light.primary,
+                    borderWidth: 2,
+                  },
+                }}
+              />
+            </View>
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+
+            <TouchableOpacity
+              style={styles.resend}
+              onPress={handleResend}
+              disabled={resendCooldown > 0}
+            >
+              <Text style={styles.resendText}>
+                {resendCooldown > 0
+                  ? `Reenviar código (${resendCooldown}s)`
+                  : "Reenviar código"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.signOutButton}
+              onPress={handleSignOut}
+            >
+              <Text style={styles.signOutText}>Cerrar sesión</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.validateButton, loading && { opacity: 0.7 }]}
+              onPress={handleValidate}
+              disabled={loading}
+            >
+              <Text style={styles.validateButtonText}>Validar cuenta</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.title}>Validar cuenta</Text>
-        <Text style={styles.subtitle}>
-          Escribe el código que te enviamos a{"\n"}
-          <Text style={styles.email}>{session?.email}</Text>
-        </Text>
-        <OtpInput
-          ref={otpRef}
-          numberOfDigits={6}
-          focusColor={Colors.light.primary}
-          autoFocus={false}
-          onTextChange={(value) => {
-            setOtp(value.toUpperCase());
-          }}
-          type="alphanumeric"
-          theme={{
-            containerStyle: {
-              marginVertical: Spacing.xl,
-              width: "auto",
-              flexDirection: "row",
-              justifyContent: "center",
-              gap: 8,
-            },
-            pinCodeContainerStyle: {
-              borderWidth: 1,
-              borderColor: Colors.light.text.secondary,
-              borderRadius: BorderRadius.md,
-              width: 40,
-              height: 48,
-              marginHorizontal: 4,
-              backgroundColor: "#fff",
-              justifyContent: "center",
-              alignItems: "center",
-              borderStyle: "dashed",
-            },
-            pinCodeTextStyle: {
-              fontSize: 24,
-              color: Colors.light.text.primary,
-            },
-            focusedPinCodeContainerStyle: {
-              borderColor: Colors.light.primary,
-            },
-          }}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <TouchableOpacity style={styles.resend} onPress={handleResend}>
-          <Text style={styles.resendText}>Reenviar código</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutText}>Cerrar sesión</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.validateButton, loading && { opacity: 0.7 }]}
-          onPress={handleValidate}
-          disabled={loading}
-        >
-          <Text style={styles.validateButtonText}>Validar cuenta</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#232222",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: Colors.light.background,
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: Spacing["3xl"],
-    width: 340,
+  content: {
+    flex: 1,
+  },
+  topSection: {
+    backgroundColor: Colors.light.white,
+    paddingHorizontal: Spacing["3xl"],
+    paddingTop: Spacing["6xl"],
+  },
+  bottomSection: {
+    flex: 1,
+    flexDirection: "column",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
+    backgroundColor: Colors.light.gray.secondary,
+    paddingHorizontal: Spacing["3xl"],
+    paddingTop: Spacing["2xl"],
   },
   avatarContainer: {
     alignItems: "center",
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing["2xl"],
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: "#EEE",
-    marginBottom: 8,
   },
-  title: {
-    fontSize: 20,
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderColor: Colors.light.gray.primary,
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: Spacing.lg,
+    borderBottomWidth: 3,
+    borderColor: Colors.light.primary,
+  },
+  tabTextActive: {
+    color: Colors.light.primary,
     fontWeight: "bold",
-    marginBottom: 8,
-    color: Colors.light.text.primary,
-    textAlign: "center",
+    fontSize: 16,
   },
   subtitle: {
     fontSize: 15,
@@ -181,8 +236,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.light.primary,
   },
+  otpContainer: {
+    width: "100%",
+    marginBottom: Spacing.lg,
+  },
   resend: {
     marginVertical: Spacing.md,
+    alignItems: "center",
   },
   resendText: {
     color: Colors.light.primary,
@@ -193,9 +253,8 @@ const styles = StyleSheet.create({
   signOutButton: {
     borderWidth: 1,
     borderColor: Colors.light.primary,
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.xl,
     marginTop: Spacing.lg,
     marginBottom: Spacing.md,
     alignItems: "center",
@@ -208,9 +267,8 @@ const styles = StyleSheet.create({
   },
   validateButton: {
     backgroundColor: Colors.light.primary,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.xl,
     alignItems: "center",
     width: "100%",
     marginTop: Spacing.md,
@@ -218,11 +276,12 @@ const styles = StyleSheet.create({
   validateButtonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
   },
   error: {
-    color: "#B00020",
+    color: "#FF3B30",
     marginBottom: Spacing.md,
     textAlign: "center",
+    fontSize: 14,
   },
 });
