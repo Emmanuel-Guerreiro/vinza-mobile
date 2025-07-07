@@ -1,56 +1,54 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import { ROUTES } from "@/constants/Routes";
+import { Colors } from "@/constants/Colors";
+import { PasswordUpdateForm } from "@/modules/user/components/PasswordUpdateForm";
+import { ProfileView } from "@/modules/user/components/ProfileData";
+import dayjs from "dayjs";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { useSession } from "../../../lib/context";
 
 export default function ProfileScreen() {
-  const { session, signOut } = useSession();
-  const router = useRouter();
+  const { session } = useSession();
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
-  const handleSignOut = async () => {
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Sign Out",
-        style: "destructive",
-        onPress: async () => {
-          signOut();
-          router.replace(ROUTES["DEFAULT"]);
-        },
-      },
-    ]);
+  const handlePasswordSuccess = () => {
+    setShowPasswordForm(false);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+  };
+
+  const handleBackToProfile = () => {
+    setShowPasswordForm(false);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.titleText}>Profile</Text>
-        <Text style={styles.subtitleText}>Welcome back!</Text>
+        <View style={styles.avatar} />
+        <View style={styles.headerInfo}>
+          <Text style={styles.desdeLabel}>Desde:</Text>
+          <Text style={styles.desdeValue}>
+            {session?.created_at
+              ? dayjs(session.created_at).format("DD/MM/YYYY")
+              : "-"}
+          </Text>
+        </View>
       </View>
 
-      <View style={styles.userInfo}>
-        <Text style={styles.subtitleText}>User Information</Text>
-        <Text>Name: {session?.nombre}</Text>
-        <Text>Email: {session?.email}</Text>
-      </View>
+      {showPasswordForm ? (
+        <PasswordUpdateForm
+          onSuccess={handlePasswordSuccess}
+          onBack={handleBackToProfile}
+        />
+      ) : (
+        <ProfileView onChangePassword={() => setShowPasswordForm(true)} />
+      )}
 
-      <View style={styles.section}>
-        <Text style={styles.subtitleText}>Protected Content</Text>
-        <Text>
-          This is a protected page that only authenticated users can access. You
-          can navigate between the Home and Explore tabs, and manage your
-          profile here.
-        </Text>
-      </View>
-
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      {showToast && (
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>Contraseña cambiada exitosamente</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -58,40 +56,54 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingTop: "20%",
+    backgroundColor: Colors.light.background,
   },
   header: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 24,
+    marginTop: 8,
+    paddingHorizontal: 24,
   },
-  titleText: {
-    fontSize: 24,
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.light.gray.primary,
+    marginRight: 16,
+  },
+  headerInfo: {
+    alignItems: "flex-end",
+    flex: 1,
+  },
+  desdeLabel: {
+    color: Colors.light.text.secondary,
+    fontSize: 14,
+  },
+  desdeValue: {
+    color: Colors.light.text.primary,
+    fontSize: 16,
     fontWeight: "bold",
   },
-  subtitleText: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  userInfo: {
-    backgroundColor: "#f0f0f0",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 30,
-  },
-  signOutButton: {
-    backgroundColor: "#FF3B30",
-
-    padding: 15,
-    borderRadius: 8,
+  toast: {
+    position: "absolute",
+    top: 40,
+    left: 16,
+    right: 16,
+    backgroundColor: "#D1FADF",
+    borderRadius: 12,
+    padding: 16,
     alignItems: "center",
+    flexDirection: "row",
+    zIndex: 100,
+    borderWidth: 1,
+    borderColor: "#12B76A",
   },
-  signOutText: {
-    color: "#fff",
+  toastText: {
+    color: "#039855",
+    fontWeight: "bold",
     fontSize: 16,
-    fontWeight: "600",
+    marginLeft: 8,
   },
 });

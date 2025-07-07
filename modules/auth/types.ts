@@ -66,6 +66,7 @@ export interface User {
   fecha_nacimiento?: Date;
   roles: Rol[];
   bodega?: Bodega;
+  created_at?: Date;
 }
 
 export type UserLogged = User & {
