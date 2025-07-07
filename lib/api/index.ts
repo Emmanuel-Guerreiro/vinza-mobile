@@ -12,6 +12,11 @@ export const apiFetch = async (
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  // Set Content-Type to application/json if body is present and Content-Type is not already set
+  if (init?.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const enhancedInit: RequestInit = {
     ...init,
     headers,

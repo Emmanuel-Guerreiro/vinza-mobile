@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/Routes";
 import { BorderRadius, Spacing } from "@/constants/Spacing";
 import { useSession } from "@/lib/context";
 import { TermsModal } from "@/modules/auth/components/TermsModal";
@@ -8,7 +9,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -19,6 +19,7 @@ import { z } from "zod";
 
 interface RegisterFormData {
   email: string;
+  name: string;
   password: string;
   confirmPassword: string;
 }
@@ -38,27 +39,25 @@ export const RegisterForm: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = useForm({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
       email: "",
+      name: "",
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    try {
-      await signUp({
-        email: data.email,
-        password: data.password,
-        name: data.email.split("@")[0],
-      });
-      router.replace("/(app)/(tabs)/explore");
-    } catch {
-      Alert.alert("Error", "Failed to sign up");
-    }
+    await signUp({
+      email: data.email,
+      name: data.name,
+      password: data.password,
+    });
+    router.replace(ROUTES["VALIDATE"]);
   };
 
   return (
@@ -83,6 +82,27 @@ export const RegisterForm: React.FC = () => {
         />
         {errors.email && (
           <Text style={styles.errorText}>{errors.email.message}</Text>
+        )}
+
+        <Text style={[styles.label, { marginTop: Spacing.lg }]}>Nombre</Text>
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={[styles.input, errors.name && styles.inputError]}
+              placeholder="Nombre"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              keyboardType="default"
+              autoCapitalize="words"
+              placeholderTextColor={Colors.light.text.secondary}
+            />
+          )}
+        />
+        {errors.name && (
+          <Text style={styles.errorText}>{errors.name.message}</Text>
         )}
 
         <Text style={[styles.label, { marginTop: Spacing.lg }]}>
@@ -142,10 +162,13 @@ export const RegisterForm: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.submitButton,
-            isSubmitting && styles.submitButtonDisabled,
+            (isSubmitting || !isValid) && styles.submitButtonDisabled,
           ]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
+          onPress={handleSubmit(onSubmit, (errors) => {
+            // eslint-disable-next-line no-console
+            console.log("Form validation errors:", errors);
+          })}
+          disabled={isSubmitting || !isValid}
         >
           <Text style={styles.submitButtonText}>
             {isSubmitting ? "Registrando..." : "Registrarme"}

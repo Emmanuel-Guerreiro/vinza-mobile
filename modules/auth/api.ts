@@ -1,5 +1,10 @@
 import { apiFetch } from "../../lib/api";
-import { LoginRequest, RegisterRequest, UserLogged } from "./types";
+import {
+  LoginRequest,
+  RegisterRequest,
+  UserLogged,
+  ValidateAccountRequest,
+} from "./types";
 
 export async function login(data: LoginRequest) {
   const response = await apiFetch("/auth/login", {
@@ -15,7 +20,6 @@ export async function register(data: RegisterRequest) {
     method: "POST",
     body: JSON.stringify(data),
   });
-
   return response.json() as Promise<UserLogged>;
 }
 
@@ -33,9 +37,9 @@ export async function resetPassword(token: string, password: string) {
   });
 }
 
-export async function validateAccount(token: string) {
-  return apiFetch("/auth/validate-account", {
+export async function validateAccount(data: ValidateAccountRequest) {
+  return apiFetch("/auth/validate", {
     method: "POST",
-    body: JSON.stringify({ token }),
+    body: JSON.stringify(data),
   });
 }

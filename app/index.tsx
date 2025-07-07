@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { ROUTES } from "@/constants/Routes";
 import { useSession } from "../lib/context";
 
 export default function HomeScreen() {
@@ -10,8 +11,8 @@ export default function HomeScreen() {
 
   // Redirect authenticated users to the internal app
   useEffect(() => {
-    if (!isLoading && session) {
-      router.replace("/(app)/(tabs)");
+    if (!isLoading && session && session.validado) {
+      router.replace(ROUTES["APP_TABS"]);
     }
   }, [session, isLoading, router]);
 

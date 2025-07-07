@@ -1,12 +1,13 @@
 import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/Routes";
 import { BorderRadius, Spacing } from "@/constants/Spacing";
 import { useSession } from "@/lib/context";
 import { LoginRequestSchema } from "@/modules/auth/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -20,7 +21,8 @@ interface LoginFormData {
 }
 
 export const LoginForm: React.FC = () => {
-  const { signIn } = useSession();
+  const { signIn, session } = useSession();
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -34,19 +36,13 @@ export const LoginForm: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      await signIn(data);
-      // router.replace("/(app)/(tabs)/explore");
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log("error", error);
-      Alert.alert("Error", "Failed to sign in");
-    }
+    const response = await signIn(data);
+    router.replace(response.validado ? ROUTES["APP_TABS"] : ROUTES["VALIDATE"]);
   };
 
   return (
     <View style={styles.form}>
-      <Text style={styles.label}>Correo electrónico</Text>
+      <Text style={styles.label}>Correo electrónico {session?.email}</Text>
       <Controller
         control={control}
         name="email"

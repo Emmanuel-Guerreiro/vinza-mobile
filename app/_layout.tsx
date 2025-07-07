@@ -52,6 +52,7 @@ function RootNavigator() {
       {/* Unprotected routes - accessible to everyone */}
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="validate" options={{ headerShown: false }} />
 
       {/* Protected routes - only accessible when authenticated */}
       <Stack.Protected guard={!!session}>

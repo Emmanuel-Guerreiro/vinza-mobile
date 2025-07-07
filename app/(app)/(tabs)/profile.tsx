@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { ROUTES } from "@/constants/Routes";
 import { useSession } from "../../../lib/context";
 
 export default function ProfileScreen() {
@@ -18,8 +19,8 @@ export default function ProfileScreen() {
         text: "Sign Out",
         style: "destructive",
         onPress: async () => {
-          await signOut();
-          router.replace("/");
+          signOut();
+          router.replace(ROUTES["DEFAULT"]);
         },
       },
     ]);
@@ -83,10 +84,10 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     backgroundColor: "#FF3B30",
+
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: "auto",
   },
   signOutText: {
     color: "#fff",

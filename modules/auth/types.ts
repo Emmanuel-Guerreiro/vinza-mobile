@@ -25,7 +25,7 @@ export const ResetPasswordRequestSchema = z.object({
 });
 
 export const ValidateAccountRequestSchema = z.object({
-  code: z.string().min(1),
+  code: z.string().min(6),
   email: z.string().email(),
 });
 

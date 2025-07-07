@@ -10,8 +10,8 @@ import { storageService } from "../storage";
 type SessionContextType = {
   session: UserLogged | null;
   isLoading: boolean;
-  signIn: (data: LoginRequest) => Promise<void>;
-  signUp: (data: RegisterRequest) => Promise<void>;
+  signIn: (data: LoginRequest) => Promise<UserLogged>;
+  signUp: (data: RegisterRequest) => Promise<UserLogged>;
   signOut: () => Promise<void>;
 };
 
@@ -43,6 +43,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
     setSession(response);
     storageService.setSession(response);
+    return response;
   };
   const signUp = async (data: RegisterRequest) => {
     const response = await register(data);
@@ -53,6 +54,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
     setSession(response);
     storageService.setSession(response);
+    return response;
   };
 
   const signOut = async () => {
