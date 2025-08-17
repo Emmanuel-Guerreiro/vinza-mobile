@@ -13,7 +13,7 @@ export const Colors = {
       primary: "#000000",
       secondary: "#687076",
     },
-    background: "#fff",
+    background: "#f5f5f5",
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",
@@ -22,6 +22,7 @@ export const Colors = {
       primary: "#DBDBDB",
       secondary: "#F2F2F2",
     },
+    black: "#000000",
     white: "#fff",
   },
   dark: {

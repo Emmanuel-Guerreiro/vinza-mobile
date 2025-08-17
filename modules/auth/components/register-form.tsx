@@ -1,8 +1,8 @@
-import { Colors } from "@/constants/Colors";
-import { ROUTES } from "@/constants/Routes";
-import { BorderRadius, Spacing } from "@/constants/Spacing";
+import { Colors } from "@/constants/colors";
+import { ROUTES } from "@/constants/routes";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSession } from "@/lib/context";
-import { TermsModal } from "@/modules/auth/components/TermsModal";
+import { TermsModal } from "@/modules/auth/components/terms-modal";
 import { RegisterRequestSchema } from "@/modules/auth/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";

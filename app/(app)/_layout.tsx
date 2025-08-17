@@ -3,7 +3,6 @@ import { useSession } from "../../lib/context";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
-
   // Show loading while checking authentication
   if (isLoading) {
     return null; // This will show the splash screen
@@ -15,8 +14,8 @@ export default function AppLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: false, gestureEnabled: true }}>
+      <Stack.Screen />
     </Stack>
   );
 }

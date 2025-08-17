@@ -1,13 +1,16 @@
-import { Colors } from "@/constants/Colors";
-import { PasswordUpdateForm } from "@/modules/user/components/PasswordUpdateForm";
-import { ProfileView } from "@/modules/user/components/ProfileData";
+import { Colors } from "@/constants/colors";
+import { ROUTES } from "@/constants/routes";
+import { PasswordUpdateForm } from "@/modules/user/components/password-update-form";
+import { ProfileView } from "@/modules/user/components/profile-data";
 import dayjs from "dayjs";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSession } from "../../../lib/context";
 
 export default function ProfileScreen() {
-  const { session } = useSession();
+  const { session, signOut } = useSession();
+  const router = useRouter();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -19,6 +22,11 @@ export default function ProfileScreen() {
 
   const handleBackToProfile = () => {
     setShowPasswordForm(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace(ROUTES["AUTH"]);
   };
 
   return (
@@ -44,6 +52,17 @@ export default function ProfileScreen() {
         <ProfileView onChangePassword={() => setShowPasswordForm(true)} />
       )}
 
+      {!showPasswordForm && (
+        <View style={styles.signOutContainer}>
+          <TouchableOpacity
+            style={styles.signOutButton}
+            onPress={handleSignOut}
+          >
+            <Text style={styles.signOutText}>Cerrar sesión</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {showToast && (
         <View style={styles.toast}>
           <Text style={styles.toastText}>Contraseña cambiada exitosamente</Text>
@@ -56,7 +75,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: "20%",
+    paddingVertical: "20%",
     backgroundColor: Colors.light.background,
   },
   header: {
@@ -85,6 +104,24 @@ const styles = StyleSheet.create({
     color: Colors.light.text.primary,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  signOutContainer: {
+    paddingHorizontal: 24,
+    marginTop: "auto",
+    marginBottom: 40,
+  },
+  signOutButton: {
+    backgroundColor: "#FEE2E2",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#EF4444",
+  },
+  signOutText: {
+    color: "#DC2626",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   toast: {
     position: "absolute",

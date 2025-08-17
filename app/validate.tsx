@@ -1,6 +1,6 @@
-import { Colors } from "@/constants/Colors";
-import { ROUTES } from "@/constants/Routes";
-import { BorderRadius, Spacing } from "@/constants/Spacing";
+import { Colors } from "@/constants/colors";
+import { ROUTES } from "@/constants/routes";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSession } from "@/lib/context";
 import { requestValidation } from "@/modules/auth/api";
 import { useRouter } from "expo-router";
@@ -25,6 +25,14 @@ export default function ValidatePage() {
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const otpRef = useRef(null);
+
+  useEffect(() => {
+    // Some hard reloads during dev will cause the session to be null
+    // This is a workaround to redirect to the app tabs if the session is not null
+    if (session && session.validado) {
+      router.replace(ROUTES["APP_TABS"]);
+    }
+  }, [session, router]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;

@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import dayjs from "dayjs";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";

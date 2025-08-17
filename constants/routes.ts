@@ -7,7 +7,7 @@ export const ROUTES: Record<string, Href> = {
   REGISTER: "/auth?mode=register",
   LOGIN: "/auth?mode=login",
   VALIDATE: "/validate",
-  EXPLORE: "/(app)/(tabs)/explore",
-  APP_TABS: "/(app)/(tabs)",
+  HOME: "/(app)/(tabs)/home",
+  APP_TABS: "/(app)/(tabs)/home",
   COMPLETE_PROFILE: "/complete-profile",
 } as const;

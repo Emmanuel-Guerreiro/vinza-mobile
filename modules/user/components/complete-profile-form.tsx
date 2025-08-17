@@ -1,6 +1,6 @@
-import { Colors } from "@/constants/Colors";
-import { ROUTES } from "@/constants/Routes";
-import { BorderRadius, Spacing } from "@/constants/Spacing";
+import { Colors } from "@/constants/colors";
+import { ROUTES } from "@/constants/routes";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSession } from "@/lib/context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker, {
@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { updateUser } from "../api";
+import { updateMyUser } from "../api";
 import { UpdateUser, UpdateUserSchema } from "../types";
 
 export const CompleteProfileForm = () => {
@@ -42,7 +42,7 @@ export const CompleteProfileForm = () => {
 
   const onSubmit = async (data: UpdateUser) => {
     if (!session) return;
-    const response = await updateUser(session.id, data);
+    const response = await updateMyUser(data);
     updateSessionUserData(response);
     router.replace(ROUTES["APP_TABS"]);
   };

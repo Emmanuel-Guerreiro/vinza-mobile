@@ -1,5 +1,5 @@
-import { Colors } from "@/constants/Colors";
-import { BorderRadius, Spacing } from "@/constants/Spacing";
+import { Colors } from "@/constants/colors";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import React from "react";
 import {
   Modal,

@@ -1,7 +1,7 @@
-import { Colors } from "@/constants/Colors";
-import { Spacing } from "@/constants/Spacing";
-import { LoginForm } from "@/modules/auth/components/LoginForm";
-import { RegisterForm } from "@/modules/auth/components/RegisterForm";
+import { Colors } from "@/constants/colors";
+import { Spacing } from "@/constants/spacing";
+import { LoginForm } from "@/modules/auth/components/login-form";
+import { RegisterForm } from "@/modules/auth/components/register-form";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {

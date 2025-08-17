@@ -1,9 +1,8 @@
 import { apiFetch } from "@/lib/api";
-import { User } from "@/modules/auth/types";
 import { UpdateUser } from "./types";
 
-export async function updateUser(id: User["id"], data: Partial<UpdateUser>) {
-  const response = await apiFetch(`/users/${id}`, {
+export async function updateMyUser(data: Partial<UpdateUser>) {
+  const response = await apiFetch(`/users/me`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

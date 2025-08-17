@@ -1,6 +1,6 @@
-import { Colors } from "@/constants/Colors";
-import { Spacing } from "@/constants/Spacing";
-import { CompleteProfileForm } from "@/modules/user/components/CompleteProfileForm";
+import { Colors } from "@/constants/colors";
+import { Spacing } from "@/constants/spacing";
+import { CompleteProfileForm } from "@/modules/user/components/complete-profile-form";
 import React from "react";
 import {
   KeyboardAvoidingView,

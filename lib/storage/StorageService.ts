@@ -1,4 +1,4 @@
-import { STORAGE_KEYS, StorageKey } from "@/constants/StorageKeys";
+import { STORAGE_KEYS, StorageKey } from "@/constants/storage-keys";
 import { UserLogged } from "@/modules/auth/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

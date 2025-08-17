@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { ROUTES } from "@/constants/Routes";
+import { ROUTES } from "@/constants/routes";
 import { useSession } from "../lib/context";
 
 export default function HomeScreen() {
