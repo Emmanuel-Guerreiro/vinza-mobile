@@ -12,12 +12,14 @@ const FilterModalContext = createContext<FilterModalContextType | undefined>(
 
 interface FilterModalProviderProps {
   children: ReactNode;
+  initialState?: boolean;
 }
 
 export const FilterModalProvider: React.FC<FilterModalProviderProps> = ({
   children,
+  initialState,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(initialState ?? false);
 
   const openModal = () => setIsVisible(true);
   const closeModal = () => setIsVisible(false);
@@ -29,10 +31,20 @@ export const FilterModalProvider: React.FC<FilterModalProviderProps> = ({
   );
 };
 
-export const useFilterModal = (): FilterModalContextType => {
+const useFilterModalContext = (): FilterModalContextType => {
   const context = useContext(FilterModalContext);
   if (!context) {
     throw new Error("useFilterModal must be used within a FilterModalProvider");
   }
   return context;
+};
+
+export const useFilterModal = () => {
+  const { isVisible, openModal, closeModal } = useFilterModalContext();
+
+  return {
+    isVisible,
+    openModal,
+    closeModal,
+  };
 };

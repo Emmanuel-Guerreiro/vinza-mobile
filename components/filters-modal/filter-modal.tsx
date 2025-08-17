@@ -1,27 +1,15 @@
-import React from "react";
-import { BaseFilterModal } from "./base-filter-modal";
-import { FilterModalContent } from "./filter-modal-content";
+import React, { ReactNode } from "react";
+import { FilterModalInternal } from "./base-filter-internal";
+import { FilterModalProvider } from "./filter-modal-context";
 
 interface FilterModalProps {
-  visible: boolean;
-  onClose: () => void;
-  title?: string;
-  onConfirm?: () => void;
+  children: ReactNode;
 }
 
-export const FilterModal: React.FC<FilterModalProps> = ({
-  visible,
-  onClose,
-  title,
-  onConfirm,
-}) => {
+export const FilterModal: React.FC<FilterModalProps> = ({ children }) => {
   return (
-    <BaseFilterModal visible={visible} onClose={onClose}>
-      <FilterModalContent
-        title={title}
-        onConfirm={onConfirm}
-        onClose={onClose}
-      />
-    </BaseFilterModal>
+    <FilterModalProvider>
+      <FilterModalInternal>{children}</FilterModalInternal>
+    </FilterModalProvider>
   );
 };

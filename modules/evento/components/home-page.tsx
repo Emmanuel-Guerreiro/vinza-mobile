@@ -1,5 +1,4 @@
 import { SearchBar } from "@/components/searchbar";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { EVENTO_QUERY_KEY, getEventos } from "@/modules/evento/api";
@@ -12,9 +11,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { EventosFilters } from "./filters";
 
 export function EventoHomePage() {
   const [search, setSearch] = useState("");
@@ -36,14 +35,17 @@ export function EventoHomePage() {
       }),
   });
 
+  const handleFilterConfirm = () => {
+    // Handle filter confirmation logic here
+    // TODO: Implement filter logic
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.searchFiltersContainer}>
           <SearchBar search={search} setSearch={setSearch} />
-          <TouchableOpacity style={styles.filterButton}>
-            <IconSymbol name="camera.filters" size={20} color="#333" />
-          </TouchableOpacity>
+          <EventosFilters applyFilters={handleFilterConfirm} />
         </View>
         {isLoading && <ActivityIndicator size="large" />}
         {!isLoading && data?.items?.length === 0 && (
@@ -73,9 +75,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     alignItems: "center",
     gap: 10,
-  },
-  filterButton: {
-    padding: Spacing["1"],
   },
   noResults: {
     fontSize: 16,

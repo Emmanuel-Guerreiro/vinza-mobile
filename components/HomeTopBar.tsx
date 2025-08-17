@@ -8,8 +8,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function HomeTopBar({
   current,
+  setCurrentTab,
 }: {
   current: "eventos" | "bodegas" | "recorridos";
+  setCurrentTab: (tab: "eventos" | "bodegas" | "recorridos") => void;
 }) {
   const router = useRouter();
   const { session } = useSession();
@@ -36,7 +38,7 @@ export function HomeTopBar({
         <TouchableOpacity
           style={styles.tab}
           onPress={() => {
-            router.push("/(app)/(tabs)/home?tab=eventos");
+            setCurrentTab("eventos");
           }}
         >
           <Text
@@ -53,7 +55,7 @@ export function HomeTopBar({
         <TouchableOpacity
           style={styles.tab}
           onPress={() => {
-            router.push("/(app)/(tabs)/home?tab=bodegas");
+            setCurrentTab("bodegas");
           }}
         >
           <Text
@@ -69,7 +71,7 @@ export function HomeTopBar({
         <TouchableOpacity
           style={styles.tab}
           onPress={() => {
-            router.push("/(app)/(tabs)/home?tab=recorridos");
+            setCurrentTab("recorridos");
           }}
         >
           <Text

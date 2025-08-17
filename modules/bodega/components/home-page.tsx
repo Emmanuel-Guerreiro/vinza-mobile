@@ -1,6 +1,4 @@
-import { FilterModal } from "@/components/filters-modal";
 import { SearchBar } from "@/components/searchbar";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { BODERGA_QUERY_KEY, getBodegas } from "@/modules/bodega/api";
@@ -12,15 +10,14 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   VirtualizedList,
 } from "react-native";
 import { Bodega } from "../types";
+import { BodegasFilters } from "./filters";
 
 export function BodegaHomePage() {
   const [search, setSearch] = useState("");
-  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
   const { data, isLoading, isFetching, refetch } = useInfiniteQuery({
     queryKey: [
@@ -49,9 +46,6 @@ export function BodegaHomePage() {
     [data?.pages?.length],
   );
 
-  const openFilterModal = () => setIsFilterModalVisible(true);
-  const closeFilterModal = () => setIsFilterModalVisible(false);
-
   const handleFilterConfirm = () => {
     // Handle filter confirmation logic here
     // TODO: Implement filter logic
@@ -62,12 +56,7 @@ export function BodegaHomePage() {
       <View style={styles.content}>
         <View style={styles.searchFiltersContainer}>
           <SearchBar search={search} setSearch={setSearch} />
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={openFilterModal}
-          >
-            <IconSymbol name="camera.filters" size={20} color="#333" />
-          </TouchableOpacity>
+          <BodegasFilters applyFilters={handleFilterConfirm} />
         </View>
 
         {isLoading && <ActivityIndicator size="large" />}
@@ -88,13 +77,6 @@ export function BodegaHomePage() {
           <Text style={styles.noResults}>No hay bodegas disponibles</Text>
         )}
       </View>
-
-      <FilterModal
-        visible={isFilterModalVisible}
-        onClose={closeFilterModal}
-        title="Filtrar bodegas"
-        onConfirm={handleFilterConfirm}
-      />
     </View>
   );
 }
@@ -142,9 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  filterButton: {
-    padding: Spacing["1"],
-  },
+
   noResults: {
     fontSize: 16,
     color: Colors.light.text.secondary,
