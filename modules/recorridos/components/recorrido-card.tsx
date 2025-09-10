@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { InstanciaEvento } from "../../evento/types";
 import { Recorrido } from "../types";
+import { calculateRecorridoDataWithLimit } from "../utils";
 import { StatusBadge } from "./status-badge";
 
 // Set dayjs locale to Spanish
@@ -22,114 +22,14 @@ interface RecorridoCardProps {
   recorrido: Recorrido;
 }
 
-interface GroupedReserva {
-  date: string;
-  dayName: string;
-  reservas: Array<{
-    id: number;
-    precio: number;
-    cantidadGente: number;
-    instanciaEvento: InstanciaEvento;
-  }>;
-}
-
 export function RecorridoCard({ recorrido }: RecorridoCardProps) {
   const router = useRouter();
 
   // Calculate date range and total days
-
-  const { dateRange, totalDays, groupedReservas, totalCost } =
-    React.useMemo(() => {
-      if (!recorrido?.reservas || recorrido?.reservas?.length === 0) {
-        return {
-          dateRange: "",
-          totalDays: 0,
-          groupedReservas: [],
-          totalCost: 0,
-        };
-      }
-
-      // Get all dates from instanciaEvento
-      const dates = recorrido?.reservas
-        .map((reserva) => dayjs(reserva.instanciaEvento?.fecha))
-        .sort((a, b) => a.valueOf() - b.valueOf());
-
-      const startDate = dates[0];
-      const endDate = dates[dates.length - 1];
-
-      // Format date range using dayjs
-      const formatDate = (date: dayjs.Dayjs, showMonth = true) => {
-        return showMonth ? date.format("ddd D [de] MMM") : date.format("ddd D");
-      };
-
-      // Check if both dates are in the same month
-      const sameMonth =
-        startDate.month() === endDate.month() &&
-        startDate.year() === endDate.year();
-
-      const dateRange = sameMonth
-        ? `${formatDate(startDate, false)} - ${formatDate(endDate, true)}`
-        : `${formatDate(startDate, true)} - ${formatDate(endDate, true)}`;
-
-      const totalDays = endDate.diff(startDate, "day") + 1;
-
-      // Group reservas by date
-      const groupedByDate = recorrido?.reservas?.reduce(
-        (acc, reserva) => {
-          const date = dayjs(reserva.instanciaEvento?.fecha);
-          const dateKey = date.format("YYYY-MM-DD");
-
-          if (!acc[dateKey]) {
-            acc[dateKey] = {
-              date: dateKey,
-              dayName: formatDate(date, true),
-              reservas: [],
-            };
-          }
-
-          acc[dateKey].reservas.push({
-            id: reserva.id,
-            precio: reserva.precio,
-            cantidadGente: reserva.cantidadGente,
-            instanciaEvento: reserva.instanciaEvento,
-          });
-
-          return acc;
-        },
-        {} as Record<string, GroupedReserva>,
-      );
-
-      const allGroupedReservas = Object.values(groupedByDate).sort(
-        (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
-      );
-
-      // Find the index where accumulated items reach 2
-      let accumulatedItems = 0;
-      let limitedIndex = 0;
-
-      for (let i = 0; i < allGroupedReservas.length; i++) {
-        accumulatedItems += allGroupedReservas[i].reservas.length;
-        if (accumulatedItems >= 2) {
-          limitedIndex = i + 1; // Include this group
-          break;
-        }
-        limitedIndex = i + 1; // Include all groups if less than 2 total items
-      }
-
-      const groupedReservas = allGroupedReservas.slice(0, limitedIndex);
-
-      const totalCost = recorrido?.reservas?.reduce(
-        (sum, reserva) => sum + parseFloat(reserva.precio.toString()),
-        0,
-      );
-
-      return {
-        dateRange,
-        totalDays,
-        groupedReservas,
-        totalCost,
-      };
-    }, [recorrido?.reservas]);
+  const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
+    () => calculateRecorridoDataWithLimit(recorrido?.reservas || [], 2),
+    [recorrido?.reservas],
+  );
 
   // Get current estado
   const currentEstado = recorrido?.estados?.[0];

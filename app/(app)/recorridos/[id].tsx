@@ -11,6 +11,7 @@ import { DetailHeader } from "@/modules/recorridos/components/detail-header";
 import { StatusBadge } from "@/modules/recorridos/components/status-badge";
 import { UpdateBookingPeopleModal } from "@/modules/recorridos/components/update-booking-people";
 import { EstadoRecorridoEnum, Reserva } from "@/modules/recorridos/types";
+import { calculateRecorridoData } from "@/modules/recorridos/utils";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
@@ -46,85 +47,10 @@ export default function RecorridoScreen() {
   });
 
   // Calculate date range and total days
-  const { dateRange, totalDays, groupedReservas, totalCost } =
-    React.useMemo(() => {
-      if (!recorrido?.reservas || recorrido?.reservas?.length === 0) {
-        return {
-          dateRange: "",
-          totalDays: 0,
-          groupedReservas: [],
-          totalCost: 0,
-        };
-      }
-
-      // Get all dates from instanciaEvento
-      const dates = recorrido?.reservas
-        .map((reserva) => dayjs(reserva.instanciaEvento?.fecha))
-        .sort((a, b) => a.valueOf() - b.valueOf());
-
-      const startDate = dates[0];
-      const endDate = dates[dates.length - 1];
-
-      // Format date range using dayjs
-      const formatDate = (date: dayjs.Dayjs, showMonth = true) => {
-        return showMonth ? date.format("ddd D [de] MMM") : date.format("ddd D");
-      };
-
-      // Check if both dates are in the same month
-      const sameMonth =
-        startDate.month() === endDate.month() &&
-        startDate.year() === endDate.year();
-
-      const dateRange = sameMonth
-        ? `${formatDate(startDate, false)} - ${formatDate(endDate, true)}`
-        : `${formatDate(startDate, true)} - ${formatDate(endDate, true)}`;
-
-      const totalDays = endDate.diff(startDate, "day") + 1;
-
-      // Group reservas by date
-      const groupedByDate = recorrido?.reservas?.reduce(
-        (acc, reserva) => {
-          const date = dayjs(reserva.instanciaEvento?.fecha);
-          const dateKey = date.format("YYYY-MM-DD");
-
-          if (!acc[dateKey]) {
-            acc[dateKey] = {
-              date: dateKey,
-              dayName: formatDate(date, true),
-              reservas: [],
-            };
-          }
-
-          acc[dateKey].reservas.push(reserva);
-
-          return acc;
-        },
-        {} as Record<
-          string,
-          {
-            date: string;
-            dayName: string;
-            reservas: Array<Reserva>;
-          }
-        >,
-      );
-
-      const allGroupedReservas = Object.values(groupedByDate).sort(
-        (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
-      );
-
-      const totalCost = recorrido?.reservas?.reduce(
-        (sum, reserva) => sum + parseFloat(reserva.precio.toString()),
-        0,
-      );
-
-      return {
-        dateRange,
-        totalDays,
-        groupedReservas: allGroupedReservas,
-        totalCost,
-      };
-    }, [recorrido?.reservas]);
+  const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
+    () => calculateRecorridoData(recorrido?.reservas || []),
+    [recorrido?.reservas],
+  );
 
   // Get current estado
   const currentEstado = recorrido?.estados?.[0];

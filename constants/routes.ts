@@ -10,4 +10,6 @@ export const ROUTES: Record<string, Href> = {
   HOME: "/(app)/(tabs)/home",
   APP_TABS: "/(app)/(tabs)/home",
   COMPLETE_PROFILE: "/complete-profile",
+  SELECT_RECORRIDO: "/select-recorrido",
+  CREAR_RECORRIDO: "/crear-recorrido",
 } as const;

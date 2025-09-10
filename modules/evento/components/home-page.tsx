@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingBottom: 80,
   },
   searchFiltersContainer: {
     maxWidth: "100%",
@@ -114,6 +115,7 @@ const styles = StyleSheet.create({
   },
   searchFiltersContainerWrapper: {
     paddingVertical: Spacing.md,
+
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

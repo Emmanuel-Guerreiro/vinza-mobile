@@ -7,9 +7,15 @@ export const findAllRecorridosParamsSchema = paginationAndOrderSchema(
   recorridoOrderByAttributes,
 ).extend({
   userId: z.number().int().positive().optional(),
-  estados: z.array(z.nativeEnum(EstadoRecorridoEnum)).optional(),
+  estados: z.nativeEnum(EstadoRecorridoEnum).optional(),
 });
 
 export const updateBookingSchema = z.object({
   cantidadGente: z.number().int().positive().optional(),
+});
+
+export const createReservaSchema = z.object({
+  cantidadGente: z.coerce.number(),
+  instanciaEventoId: z.coerce.number(),
+  recorridoId: z.coerce.number().optional(),
 });

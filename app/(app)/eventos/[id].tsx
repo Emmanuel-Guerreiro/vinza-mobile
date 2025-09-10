@@ -1,4 +1,5 @@
 import { NavigationHeader } from "@/components/navigation-header";
+import { ReservaChoiceModal } from "@/components/reserva-choice-modal";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
@@ -6,9 +7,12 @@ import { toTitleCase } from "@/lib/util";
 import { EVENTO_QUERY_KEY, getEvento, getEventos } from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
 import { EstadoInstanciaEventoEnum, Evento } from "@/modules/evento/types";
+import { getRecorridos, RECORRIDOS_QUERY_KEY } from "@/modules/recorridos/api";
+import { EstadoRecorridoEnum } from "@/modules/recorridos/types";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
 import {
   Image,
   ScrollView,
@@ -20,6 +24,23 @@ import {
 
 export default function EventoScreen() {
   const { id } = useLocalSearchParams();
+
+  const [selectedInstanciaId, setSelectedInstanciaId] = useState<number | null>(
+    null,
+  );
+
+  const { data: recorridos } = useQuery({
+    queryKey: [
+      RECORRIDOS_QUERY_KEY,
+      { page: 1, limit: 1e9, estados: EstadoRecorridoEnum.PENDIENTE },
+    ],
+    queryFn: () =>
+      getRecorridos({
+        page: 1,
+        limit: 1e9,
+        estados: EstadoRecorridoEnum.PENDIENTE,
+      }),
+  });
 
   const { data: evento } = useQuery({
     queryKey: [EVENTO_QUERY_KEY, id],
@@ -37,7 +58,21 @@ export default function EventoScreen() {
     enabled: !!evento?.sucursal?.bodega?.id,
   });
 
-  const isRecurrente = !!evento?.recurrencias?.length;
+  const isRecurrente = (evento?.recurrencias?.length ?? 0) > 1;
+  const hasRecorridos = (recorridos?.items?.length ?? 0) > 0;
+
+  const handleReservar = (instanciaId?: number) => {
+    if (hasRecorridos) {
+      if (!instanciaId) {
+        return;
+      }
+      setSelectedInstanciaId(instanciaId);
+    } else {
+      // No recorridos - go directly to crear-recorrido
+      const targetInstanciaId = instanciaId || Number(id);
+      router.push(`/crear-recorrido?instanciaEventoId=${targetInstanciaId}`);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -53,9 +88,7 @@ export default function EventoScreen() {
         </View>
         {/**Update to the case with the recurrencias */}
         <View style={styles.eventoInfo}>
-          <Text>
-            Tipo evento: {evento?.recurrencias?.length ? "Recurrente" : "Único"}
-          </Text>
+          <Text>Tipo evento: {isRecurrente ? "Recurrente" : "Único"}</Text>
           <Text>Precio: {evento?.precio}</Text>
           <Text style={styles.ratingContainer}>
             Calificacion: 4.5{" "}
@@ -67,10 +100,7 @@ export default function EventoScreen() {
         {!isRecurrente && (
           <TouchableOpacity
             style={styles.reserveButton}
-            onPress={() => {
-              // eslint-disable-next-line no-console
-              console.log("RESERVAR");
-            }}
+            onPress={() => handleReservar(evento?.instancias?.[0]?.id)}
           >
             <Text style={styles.reserveButtonText}>Reservar</Text>
           </TouchableOpacity>
@@ -93,7 +123,10 @@ export default function EventoScreen() {
                         {dayjs(item.fecha).format("DD/MM/YYYY HH:mm")}
                       </Text>
                     </View>
-                    <TouchableOpacity style={styles.instanceReserveButton}>
+                    <TouchableOpacity
+                      style={styles.instanceReserveButton}
+                      onPress={() => handleReservar(item.id)}
+                    >
                       <Text style={styles.instanceReserveButtonText}>
                         Reservar fecha
                       </Text>
@@ -110,6 +143,13 @@ export default function EventoScreen() {
           ))}
         </View>
       </View>
+      {!!selectedInstanciaId && (
+        <ReservaChoiceModal
+          visible={selectedInstanciaId !== null}
+          onClose={() => setSelectedInstanciaId(null)}
+          instanciaEventoId={selectedInstanciaId || 0}
+        />
+      )}
     </ScrollView>
   );
 }

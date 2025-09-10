@@ -1,6 +1,10 @@
 import z from "zod";
 import { InstanciaEvento } from "../evento/types";
-import { findAllRecorridosParamsSchema, updateBookingSchema } from "./schema";
+import {
+  createReservaSchema,
+  findAllRecorridosParamsSchema,
+  updateBookingSchema,
+} from "./schema";
 
 export enum EstadoRecorridoEnum {
   PENDIENTE = "PENDIENTE",
@@ -47,3 +51,5 @@ export interface EstadoReserva {
 export type RecorridoParams = z.infer<typeof findAllRecorridosParamsSchema>;
 
 export type UpdateBooking = z.infer<typeof updateBookingSchema>;
+
+export type CreateReserva = z.infer<typeof createReservaSchema>;
