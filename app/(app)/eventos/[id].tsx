@@ -3,10 +3,14 @@ import { ReservaChoiceModal } from "@/components/reserva-choice-modal";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
-import { toTitleCase } from "@/lib/util";
 import { EVENTO_QUERY_KEY, getEvento, getEventos } from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
-import { EstadoInstanciaEventoEnum, Evento } from "@/modules/evento/types";
+import { EventStatusBadge } from "@/modules/evento/components/event-status-badge";
+import {
+  EstadoEventoEnum,
+  EstadoInstanciaEventoEnum,
+  Evento,
+} from "@/modules/evento/types";
 import { getRecorridos, RECORRIDOS_QUERY_KEY } from "@/modules/recorridos/api";
 import { EstadoRecorridoEnum } from "@/modules/recorridos/types";
 import { useQuery } from "@tanstack/react-query";
@@ -95,7 +99,12 @@ export default function EventoScreen() {
             <IconSymbol name="star.fill" size={12} color="#FFD700" />{" "}
           </Text>
           <Text>Dirección: {evento?.sucursal?.direccion}</Text>
-          <Text>Estado: {toTitleCase(evento?.estado?.nombre ?? "")}</Text>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusLabel}>Estado:</Text>
+            <EventStatusBadge
+              estado={evento?.estado?.nombre as EstadoEventoEnum}
+            />
+          </View>
         </View>
         {!isRecurrente && (
           <TouchableOpacity
@@ -250,5 +259,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: Spacing.md,
     marginBottom: 100,
+  },
+  statusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  statusLabel: {
+    fontSize: 14,
+    color: Colors.light.text.secondary,
   },
 });

@@ -27,6 +27,8 @@ export function RecorridosHomePage() {
         ? undefined
         : lastPage.meta.currentPage + 1,
     initialPageParam: 1,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const recorridosItems = useMemo(() => {
@@ -49,13 +51,13 @@ export function RecorridosHomePage() {
 
       return orderA - orderB;
     });
-  }, [data?.pages?.length]);
+  }, [data]);
   // console.log("recorridosItems", recorridosItems);
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        {isLoading && <ActivityIndicator size="large" />}
+        {isLoading && !data && <ActivityIndicator size="large" />}
         {recorridosItems?.length ? (
           <VirtualizedList
             data={recorridosItems ?? []}

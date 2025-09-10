@@ -3,6 +3,7 @@ import { PaginatedResponse } from "@/lib/api/types";
 import { filtersToSearchParams } from "@/lib/util";
 import {
   CategoriaEvento,
+  EstadoEvento,
   Evento,
   EventoParams,
   InstanciaEvento,
@@ -11,7 +12,7 @@ import {
 export const EVENTO_QUERY_KEY = "/eventos";
 export const INSTANCIA_QUERY_KEY = "/instancia-eventos";
 export const CATEGORIA_EVENTOS_QUERY_KEY = "/categoria-eventos";
-
+export const ESTADO_EVENTOS_QUERY_KEY = "/estado-eventos";
 export async function getEvento(id: Evento["id"]): Promise<Evento> {
   const response = await apiFetch(`${EVENTO_QUERY_KEY}/${id}`);
   return response.json();
@@ -39,5 +40,12 @@ export async function findCategoriasEventos(): Promise<
   PaginatedResponse<CategoriaEvento>
 > {
   const response = await apiFetch(CATEGORIA_EVENTOS_QUERY_KEY);
+  return response.json();
+}
+
+export async function findEstadosEventos(): Promise<
+  PaginatedResponse<EstadoEvento>
+> {
+  const response = await apiFetch(ESTADO_EVENTOS_QUERY_KEY);
   return response.json();
 }

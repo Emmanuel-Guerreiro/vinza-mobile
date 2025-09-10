@@ -12,12 +12,14 @@ export function filtersToSearchParams(filters: FilterRecord): string {
     if (Array.isArray(value) && value.length === 0) return;
 
     if (Array.isArray(value)) {
-      // Handle arrays by appending each value separately
-      value.forEach((item) => {
-        if (item !== undefined && item !== null && item !== "") {
-          searchParams.append(key, item.toString());
-        }
-      });
+      // Handle arrays by serializing them textually
+      const validItems = value.filter(
+        (item) => item !== undefined && item !== null && item !== "",
+      );
+      if (validItems.length > 0) {
+        const serializedArray = `[${validItems.map((item) => item.toString()).join(",")}]`;
+        searchParams.append(key, serializedArray);
+      }
     } else {
       // Handle non-array values
       searchParams.append(key, value.toString());

@@ -1,10 +1,15 @@
 import { SearchBar } from "@/components/searchbar";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
-import { EVENTO_QUERY_KEY, getEventos } from "@/modules/evento/api";
+import {
+  ESTADO_EVENTOS_QUERY_KEY,
+  EVENTO_QUERY_KEY,
+  findEstadosEventos,
+  getEventos,
+} from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
-import { Evento, EventoParams } from "@/modules/evento/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { EstadoEventoEnum, Evento, EventoParams } from "@/modules/evento/types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,24 +32,37 @@ const defaultFilters: EventoParams = {
 export function EventoHomePage() {
   const [filters, setFilters] = useState<EventoParams>(defaultFilters);
 
+  const { data: estado } = useQuery({
+    queryKey: [ESTADO_EVENTOS_QUERY_KEY, EstadoEventoEnum.ACTIVO],
+    queryFn: () =>
+      findEstadosEventos().then((res) => {
+        return res.items.find(
+          (estado) => estado.nombre === EstadoEventoEnum.ACTIVO,
+        );
+      }),
+  });
+
   const { data, isLoading, isFetching, refetch } = useInfiniteQuery({
     queryKey: [
       EVENTO_QUERY_KEY,
       {
         ...defaultFilters,
         ...filters,
+        estadoId: estado?.id,
       },
     ],
     queryFn: () =>
       getEventos({
         ...defaultFilters,
         ...filters,
+        estadoId: estado?.id,
       }),
     getNextPageParam: (lastPage) =>
       lastPage.meta.currentPage === lastPage.meta.totalPages
         ? undefined
         : lastPage.meta.currentPage + 1,
     initialPageParam: 1,
+    enabled: !!estado,
   });
 
   const eventosItems = useMemo(

@@ -13,8 +13,18 @@ export interface Evento {
   estado?: EstadoEvento;
   categoria?: CategoriaEvento;
   recurrencias?: RecurrenciaEvento[];
-  promedioValoracion?: number;
+  valoracionMedia?: ValoracionMedia[];
   instancias?: InstanciaEvento[];
+}
+
+export interface ValoracionMedia {
+  cantidad_valoraciones: number;
+  created_at: string;
+  deleted_at: null;
+  eventoId: number;
+  id: number;
+  updated_at: string;
+  valor_medio: string;
 }
 
 export interface InstanciaEvento {
@@ -116,3 +126,9 @@ export type RecurrenciaEventoUpdateAttributes =
   Partial<RecurrenciaEventoCreationAttributes>;
 
 export type EventoParams = z.infer<typeof EventoParamsSchema>;
+
+export enum EstadoEventoEnum {
+  ACTIVO = "ACTIVO",
+  SUSPENDIDO = "SUSPENDIDO",
+  FINALIZADO = "FINALIZADO",
+}

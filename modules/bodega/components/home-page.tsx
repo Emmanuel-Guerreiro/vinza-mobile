@@ -59,7 +59,7 @@ export function BodegaHomePage() {
           <BodegasFilters applyFilters={handleFilterConfirm} />
         </View>
 
-        {isLoading && <ActivityIndicator size="large" />}
+        {isLoading && !data && <ActivityIndicator size="large" />}
         {bodegasItems ? (
           <VirtualizedList
             data={bodegasItems}

@@ -1,5 +1,6 @@
 import { paginationAndOrderSchema } from "@/lib/pagination";
 import z from "zod";
+import { EstadoEventoEnum } from "./types";
 
 const eventoOrderByAttributes = [
   "id",
@@ -19,6 +20,7 @@ export const EventoParamsSchema = paginationAndOrderSchema(
   sucursalId: z.coerce.number().optional(),
   categoriaId: z.coerce.number().optional(),
   estadoId: z.coerce.number().optional(),
+  estados: z.nativeEnum(EstadoEventoEnum).optional(),
   bodegaId: z.coerce.number().optional(),
   fechaDesde: z.string().datetime().optional(),
   fechaHasta: z.string().datetime().optional(),

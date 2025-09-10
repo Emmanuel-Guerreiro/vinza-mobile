@@ -3,7 +3,8 @@ import { Colors } from "@/constants/colors";
 import { formatCurrency } from "@/lib/util";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Evento } from "../types";
+import { EstadoEventoEnum, Evento } from "../types";
+import { EventStatusBadge } from "./event-status-badge";
 
 export function EventCard({
   evento,
@@ -31,7 +32,12 @@ export function EventCard({
           </Text>
         )}
         <View style={styles.eventHeader}>
-          <Text style={styles.eventTitle}>{evento.nombre}</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.eventTitle}>{evento.nombre}</Text>
+            <EventStatusBadge
+              estado={evento.estado?.nombre as EstadoEventoEnum}
+            />
+          </View>
           <Text style={styles.eventPrice}>{formatCurrency(evento.precio)}</Text>
         </View>
 
@@ -47,15 +53,19 @@ export function EventCard({
           <View style={styles.dateRatingContainer}>
             <Text style={styles.eventDetail}>Fecha: 04/07/25</Text>
             <View style={styles.ratingContainer}>
-              <IconSymbol
-                name="star.fill"
-                size={16}
-                color={Colors.light.primary}
-              />
-              {evento.promedioValoracion && (
-                <Text style={styles.rating}>
-                  {parseFloat(evento.promedioValoracion.toString()).toFixed(1)}
-                </Text>
+              {evento.valoracionMedia?.length && (
+                <>
+                  <IconSymbol
+                    name="star.fill"
+                    size={16}
+                    color={Colors.light.primary}
+                  />
+                  <Text style={styles.rating}>
+                    {parseFloat(
+                      evento.valoracionMedia[0].valor_medio.toString(),
+                    ).toFixed(1)}
+                  </Text>
+                </>
               )}
             </View>
           </View>
@@ -99,8 +109,12 @@ const styles = StyleSheet.create({
   eventHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 8,
+  },
+  titleContainer: {
+    flex: 1,
+    marginRight: 12,
   },
   wineryName: {
     fontSize: 16,
@@ -116,7 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.light.text.primary,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   eventDescription: {
     fontSize: 14,
