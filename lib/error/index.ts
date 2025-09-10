@@ -17,6 +17,8 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     return apiErrorSchema.parse(errorData);
   } catch {
     // If parsing fails, return a default error
+    // eslint-disable-next-line no-console
+    console.error("Failed to parse API error -> ", await response.text(), "\n");
     return {
       key: "app.general.network_error",
       message: "Error de red",

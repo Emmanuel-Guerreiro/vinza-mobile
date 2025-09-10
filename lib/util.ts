@@ -37,3 +37,8 @@ export function formatCurrency(amount: number) {
     currency: "ARS",
   }).format(amount);
 }
+
+export function toTitleCase(str: string) {
+  if (!str) return "";
+  return str[0].toUpperCase() + str.slice(1);
+}

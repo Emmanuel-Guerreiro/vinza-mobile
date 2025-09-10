@@ -32,7 +32,7 @@ export const FilterModalInternal: React.FC<BaseFilterModalProps> = ({
       >
         <TouchableWithoutFeedback onPress={closeModal}>
           <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback onPress={closeModal}>
+            <TouchableWithoutFeedback onPress={() => {}}>
               <View style={styles.modalContent}>{children}</View>
             </TouchableWithoutFeedback>
           </View>

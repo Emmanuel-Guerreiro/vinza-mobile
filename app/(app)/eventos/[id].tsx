@@ -2,10 +2,12 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
+import { toTitleCase } from "@/lib/util";
 import { EVENTO_QUERY_KEY, getEvento, getEventos } from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
-import { Evento } from "@/modules/evento/types";
+import { EstadoInstanciaEventoEnum, Evento } from "@/modules/evento/types";
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useLocalSearchParams } from "expo-router";
 import {
   Image,
@@ -35,6 +37,8 @@ export default function EventoScreen() {
     enabled: !!evento?.sucursal?.bodega?.id,
   });
 
+  const isRecurrente = !!evento?.recurrencias?.length;
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <NavigationHeader title="Evento" />
@@ -58,16 +62,47 @@ export default function EventoScreen() {
             <IconSymbol name="star.fill" size={12} color="#FFD700" />{" "}
           </Text>
           <Text>Dirección: {evento?.sucursal?.direccion}</Text>
+          <Text>Estado: {toTitleCase(evento?.estado?.nombre ?? "")}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.reserveButton}
-          onPress={() => {
-            // eslint-disable-next-line no-console
-            console.log("RESERVAR");
-          }}
-        >
-          <Text style={styles.reserveButtonText}>Reservar</Text>
-        </TouchableOpacity>
+        {!isRecurrente && (
+          <TouchableOpacity
+            style={styles.reserveButton}
+            onPress={() => {
+              // eslint-disable-next-line no-console
+              console.log("RESERVAR");
+            }}
+          >
+            <Text style={styles.reserveButtonText}>Reservar</Text>
+          </TouchableOpacity>
+        )}
+        {isRecurrente && (
+          <>
+            <Text style={styles.datesTitle}>Fechas para este evento</Text>
+            <View style={{ flexDirection: "column", gap: Spacing.xs }}>
+              {evento?.instancias
+                ?.filter(
+                  (instancia) =>
+                    instancia.estado.nombre ===
+                    EstadoInstanciaEventoEnum.ACTIVA,
+                )
+                ?.map((item) => (
+                  <View key={item.id} style={styles.instanceCard}>
+                    <View style={{ flexDirection: "column", gap: Spacing.xs }}>
+                      <Text>Fecha</Text>
+                      <Text>
+                        {dayjs(item.fecha).format("DD/MM/YYYY HH:mm")}
+                      </Text>
+                    </View>
+                    <TouchableOpacity style={styles.instanceReserveButton}>
+                      <Text style={styles.instanceReserveButtonText}>
+                        Reservar fecha
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+            </View>
+          </>
+        )}
         <Text style={styles.relatedTitle}>Mas eventos de esta bodega</Text>
         <View style={styles.relatedContainer}>
           {related?.items?.map((evento: Evento) => (
@@ -139,6 +174,36 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: Colors.light.text.primary,
+  },
+  datesTitle: {
+    fontSize: 16,
+    fontWeight: "medium",
+    textAlign: "center",
+    marginHorizontal: "auto",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.primary,
+    paddingBottom: Spacing.sm,
+    color: Colors.light.text.primary,
+    marginBottom: Spacing.sm,
+  },
+  instanceReserveButton: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: 12,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    alignItems: "center",
+  },
+  instanceReserveButtonText: {
+    color: Colors.light.white,
+    fontSize: 12,
+  },
+  instanceCard: {
+    backgroundColor: Colors.light.gray.primary,
+    padding: Spacing.md,
+    borderRadius: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   relatedContainer: {
     display: "flex",

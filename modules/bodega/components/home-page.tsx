@@ -72,6 +72,7 @@ export function BodegaHomePage() {
             refreshControl={
               <RefreshControl refreshing={isFetching} onRefresh={refetch} />
             }
+            showsVerticalScrollIndicator={false}
           />
         ) : (
           <Text style={styles.noResults}>No hay bodegas disponibles</Text>

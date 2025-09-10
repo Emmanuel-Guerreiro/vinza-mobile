@@ -9,7 +9,9 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { appEvents } from "@/lib/app-events";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SessionProvider, useSession } from "../lib/context";
 import { SplashScreenController } from "../splash";
@@ -47,7 +49,14 @@ export default function RootLayout() {
 
 // Separate component to access SessionProvider context
 function RootNavigator() {
-  const { session, isLoading } = useSession();
+  const { session, isLoading, signOut } = useSession();
+
+  useEffect(() => {
+    appEvents.on("logout", signOut);
+    return () => {
+      appEvents.off("logout", signOut);
+    };
+  }, []);
 
   // Show loading while checking authentication
   if (isLoading) {

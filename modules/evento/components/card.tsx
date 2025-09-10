@@ -52,7 +52,11 @@ export function EventCard({
                 size={16}
                 color={Colors.light.primary}
               />
-              <Text style={styles.rating}>3.5</Text>
+              {evento.promedioValoracion && (
+                <Text style={styles.rating}>
+                  {parseFloat(evento.promedioValoracion.toString()).toFixed(1)}
+                </Text>
+              )}
             </View>
           </View>
         </View>

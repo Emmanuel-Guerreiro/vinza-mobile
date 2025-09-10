@@ -35,7 +35,7 @@ export function SearchBar({
 const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   searchBar: {
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: Colors.light.white,
     gap: 10,
-    alignItems: "center",
+    alignItems: "flex-start",
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    maxWidth: "91%",
   },
   searchInput: {
     flex: 1,

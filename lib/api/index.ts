@@ -1,3 +1,4 @@
+import { appEvents } from "../app-events";
 import { parseApiError } from "../error";
 import { storageService } from "../storage";
 
@@ -29,6 +30,16 @@ export const apiFetch = async (
 
   if (!response.ok) {
     const error = await parseApiError(response);
+    if (error.key == "app.auth.invalid_or_expired_code") {
+      appEvents.emit("logout");
+    }
+
+    if (error.key == "app.auth.unauthorized") {
+      appEvents.emit("unauthorized");
+    }
+
+    // eslint-disable-next-line no-console
+    console.log("ERROR -> ", error, "\n");
     throw error;
   }
   return response;

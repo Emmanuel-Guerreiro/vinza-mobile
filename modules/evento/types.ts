@@ -13,6 +13,36 @@ export interface Evento {
   estado?: EstadoEvento;
   categoria?: CategoriaEvento;
   recurrencias?: RecurrenciaEvento[];
+  promedioValoracion?: number;
+  instancias?: InstanciaEvento[];
+}
+
+export interface InstanciaEvento {
+  id: number;
+  estado: InstanciaEventoEstado;
+  estadoId: number;
+
+  eventoId: number;
+  evento?: Evento;
+  fecha: string;
+  recurrenciaEventoId: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+}
+
+export interface InstanciaEventoEstado {
+  created_at: string;
+  deleted_at: string | null;
+  id: number;
+  nombre: EstadoInstanciaEventoEnum;
+  updated_at: string;
+}
+
+export enum EstadoInstanciaEventoEnum {
+  ACTIVA = "ACTIVA",
+  FINALIZADA = "FINALIZADA",
+  SUSPENDIDA = "SUSPENDIDA",
 }
 
 export interface CategoriaEvento {
