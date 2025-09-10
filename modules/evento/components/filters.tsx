@@ -16,8 +16,8 @@ import {
   View,
 } from "react-native";
 import { CATEGORIA_EVENTOS_QUERY_KEY, findCategoriasEventos } from "../api";
-import { EventoFilterFormData, EventoFilterSchema } from "../schemas";
-import { CategoriaEvento } from "../types";
+import { EventoFilterSchema } from "../schemas";
+import { CategoriaEvento, EventoFilterFormData } from "../types";
 
 interface EventosFiltersProps {
   applyFilters: (filters: EventoFilterFormData) => void;

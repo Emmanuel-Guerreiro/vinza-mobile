@@ -20,7 +20,7 @@ import {
   View,
   VirtualizedList,
 } from "react-native";
-import { EventoFilterFormData } from "../schemas";
+import { EventoFilterFormData } from "../types";
 import { EventosFilters } from "./filters";
 
 const defaultFilters: EventoParams = {

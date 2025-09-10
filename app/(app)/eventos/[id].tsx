@@ -95,7 +95,7 @@ export default function EventoScreen() {
           <Text>Tipo evento: {isRecurrente ? "Recurrente" : "Único"}</Text>
           <Text>Precio: {evento?.precio}</Text>
           <Text style={styles.ratingContainer}>
-            Calificacion: 4.5{" "}
+            Calificacion: {evento?.valoracionMedia?.[0]?.valor_medio}
             <IconSymbol name="star.fill" size={12} color="#FFD700" />{" "}
           </Text>
           <Text>Dirección: {evento?.sucursal?.direccion}</Text>
@@ -107,12 +107,22 @@ export default function EventoScreen() {
           </View>
         </View>
         {!isRecurrente && (
-          <TouchableOpacity
-            style={styles.reserveButton}
-            onPress={() => handleReservar(evento?.instancias?.[0]?.id)}
-          >
-            <Text style={styles.reserveButtonText}>Reservar</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={styles.reserveButton}
+              onPress={() => handleReservar(evento?.instancias?.[0]?.id)}
+            >
+              <Text style={styles.reserveButtonText}>Reservar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.puntuarButton}
+              onPress={() =>
+                router.push(`/puntuar/${evento?.instancias?.[0]?.id}`)
+              }
+            >
+              <Text style={styles.puntuarButtonText}>Puntuar</Text>
+            </TouchableOpacity>
+          </View>
         )}
         {isRecurrente && (
           <>
@@ -132,14 +142,24 @@ export default function EventoScreen() {
                         {dayjs(item.fecha).format("DD/MM/YYYY HH:mm")}
                       </Text>
                     </View>
-                    <TouchableOpacity
-                      style={styles.instanceReserveButton}
-                      onPress={() => handleReservar(item.id)}
-                    >
-                      <Text style={styles.instanceReserveButtonText}>
-                        Reservar fecha
-                      </Text>
-                    </TouchableOpacity>
+                    <View style={styles.instanceButtonsContainer}>
+                      <TouchableOpacity
+                        style={styles.instanceReserveButton}
+                        onPress={() => handleReservar(item.id)}
+                      >
+                        <Text style={styles.instanceReserveButtonText}>
+                          Reservar fecha
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.instancePuntuarButton}
+                        onPress={() => router.push(`/puntuar/${item.id}`)}
+                      >
+                        <Text style={styles.instancePuntuarButtonText}>
+                          Puntuar
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 ))}
             </View>
@@ -208,14 +228,33 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
   },
+  buttonsContainer: {
+    flexDirection: "row",
+    gap: Spacing.md,
+  },
   reserveButton: {
     backgroundColor: Colors.light.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
+    flex: 1,
   },
   reserveButtonText: {
     color: Colors.light.white,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  puntuarButton: {
+    backgroundColor: Colors.light.white,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    flex: 1,
+  },
+  puntuarButtonText: {
+    color: Colors.light.primary,
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -245,6 +284,23 @@ const styles = StyleSheet.create({
   instanceReserveButtonText: {
     color: Colors.light.white,
     fontSize: 12,
+  },
+  instancePuntuarButton: {
+    backgroundColor: Colors.light.white,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: 12,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    alignItems: "center",
+  },
+  instancePuntuarButtonText: {
+    color: Colors.light.primary,
+    fontSize: 12,
+  },
+  instanceButtonsContainer: {
+    flexDirection: "row",
+    gap: Spacing.sm,
   },
   instanceCard: {
     backgroundColor: Colors.light.gray.primary,

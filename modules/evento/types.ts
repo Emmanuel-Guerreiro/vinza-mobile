@@ -1,6 +1,10 @@
 import z from "zod";
 import { Sucursal } from "../bodega/types";
-import { EventoParamsSchema } from "./schemas";
+import {
+  createValoracionSchema,
+  EventoFilterSchema,
+  EventoParamsSchema,
+} from "./schemas";
 
 // Base interfaces for the models
 export interface Evento {
@@ -132,3 +136,7 @@ export enum EstadoEventoEnum {
   SUSPENDIDO = "SUSPENDIDO",
   FINALIZADO = "FINALIZADO",
 }
+
+export type EventoFilterFormData = z.infer<typeof EventoFilterSchema>;
+
+export type CreateValoracion = z.infer<typeof createValoracionSchema>;

@@ -38,4 +38,7 @@ export const EventoFilterSchema = z.object({
   bodegaId: z.number().optional(),
 });
 
-export type EventoFilterFormData = z.infer<typeof EventoFilterSchema>;
+export const createValoracionSchema = z.object({
+  valor: z.number().min(1).max(5),
+  eventoId: z.number(),
+});
