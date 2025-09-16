@@ -1,3 +1,4 @@
+import { EventoSkeleton } from "@/components/evento-skeleton";
 import { NavigationHeader } from "@/components/navigation-header";
 import { ReservaChoiceModal } from "@/components/reserva-choice-modal";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -46,7 +47,7 @@ export default function EventoScreen() {
       }),
   });
 
-  const { data: evento } = useQuery({
+  const { data: evento, isLoading: isLoadingEvento } = useQuery({
     queryKey: [EVENTO_QUERY_KEY, id],
     queryFn: () => getEvento(Number(id)),
   });
@@ -77,6 +78,15 @@ export default function EventoScreen() {
       router.push(`/crear-recorrido?instanciaEventoId=${targetInstanciaId}`);
     }
   };
+
+  if (isLoadingEvento) {
+    return (
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <NavigationHeader title="Evento" />
+        <EventoSkeleton />
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

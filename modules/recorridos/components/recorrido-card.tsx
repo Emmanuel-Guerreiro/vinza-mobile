@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Recorrido } from "../types";
+import { EstadoRecorridoEnum, Recorrido } from "../types";
 import { calculateRecorridoDataWithLimit } from "../utils";
 import { StatusBadge } from "./status-badge";
 
@@ -144,9 +144,11 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
         >
           <Text style={styles.detailButtonText}>Detalle</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-          <Text style={styles.confirmButtonText}>Confirmar Recorrido</Text>
-        </TouchableOpacity>
+        {currentEstado?.nombre !== EstadoRecorridoEnum.CONFIRMADO && (
+          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+            <Text style={styles.confirmButtonText}>Confirmar Recorrido</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
