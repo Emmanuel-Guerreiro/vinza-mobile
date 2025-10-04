@@ -29,6 +29,10 @@ export default function ProfileScreen() {
     router.replace(ROUTES["AUTH"]);
   };
 
+  const handleAyuda = () => {
+    router.push("/faqs");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -53,7 +57,11 @@ export default function ProfileScreen() {
       )}
 
       {!showPasswordForm && (
-        <View style={styles.signOutContainer}>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.ayudaButton} onPress={handleAyuda}>
+            <Text style={styles.ayudaText}>Ayuda</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
@@ -105,10 +113,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  signOutContainer: {
+  buttonsContainer: {
     paddingHorizontal: 24,
     marginTop: "auto",
     marginBottom: 40,
+    gap: 12,
   },
   signOutButton: {
     backgroundColor: "#FEE2E2",
@@ -120,6 +129,17 @@ const styles = StyleSheet.create({
   },
   signOutText: {
     color: "#DC2626",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  ayudaButton: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+  },
+  ayudaText: {
+    color: "white",
     fontWeight: "bold",
     fontSize: 16,
   },

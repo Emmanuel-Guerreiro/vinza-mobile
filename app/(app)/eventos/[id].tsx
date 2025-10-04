@@ -6,12 +6,7 @@ import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { EVENTO_QUERY_KEY, getEvento, getEventos } from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
-import { EventStatusBadge } from "@/modules/evento/components/event-status-badge";
-import {
-  EstadoEventoEnum,
-  EstadoInstanciaEventoEnum,
-  Evento,
-} from "@/modules/evento/types";
+import { EstadoInstanciaEventoEnum, Evento } from "@/modules/evento/types";
 import { getRecorridos, RECORRIDOS_QUERY_KEY } from "@/modules/recorridos/api";
 import { EstadoRecorridoEnum } from "@/modules/recorridos/types";
 import { useQuery } from "@tanstack/react-query";
@@ -90,7 +85,6 @@ export default function EventoScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <NavigationHeader title="Evento" />
       <View style={styles.content}>
         <Text style={styles.eventoName}>{evento?.nombre}</Text>
         <View style={styles.bodegaImageContainer}>
@@ -109,12 +103,12 @@ export default function EventoScreen() {
             <IconSymbol name="star.fill" size={12} color="#FFD700" />{" "}
           </Text>
           <Text>Dirección: {evento?.sucursal?.direccion}</Text>
-          <View style={styles.statusContainer}>
+          {/* <View style={styles.statusContainer}>
             <Text style={styles.statusLabel}>Estado:</Text>
             <EventStatusBadge
               estado={evento?.estado?.nombre as EstadoEventoEnum}
             />
-          </View>
+          </View> */}
         </View>
         {!isRecurrente && (
           <View style={styles.buttonsContainer}>
@@ -124,14 +118,14 @@ export default function EventoScreen() {
             >
               <Text style={styles.reserveButtonText}>Reservar</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.puntuarButton}
               onPress={() =>
                 router.push(`/puntuar/${evento?.instancias?.[0]?.id}`)
               }
             >
               <Text style={styles.puntuarButtonText}>Puntuar</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         )}
         {isRecurrente && (
@@ -161,14 +155,14 @@ export default function EventoScreen() {
                           Reservar fecha
                         </Text>
                       </TouchableOpacity>
-                      <TouchableOpacity
+                      {/* <TouchableOpacity
                         style={styles.instancePuntuarButton}
                         onPress={() => router.push(`/puntuar/${item.id}`)}
                       >
                         <Text style={styles.instancePuntuarButtonText}>
                           Puntuar
                         </Text>
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
                     </View>
                   </View>
                 ))}
@@ -201,11 +195,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xl,
   },
   content: {
+    paddingTop: 75,
     display: "flex",
     flexDirection: "column",
     gap: Spacing.xl,
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
   },
   eventoName: {
     fontSize: 24,
@@ -286,7 +280,7 @@ const styles = StyleSheet.create({
   },
   instanceReserveButton: {
     backgroundColor: Colors.light.primary,
-    borderRadius: 12,
+    borderRadius: 8,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     alignItems: "center",

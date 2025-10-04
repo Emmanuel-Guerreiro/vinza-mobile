@@ -13,6 +13,7 @@ import { appEvents } from "@/lib/app-events";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ToastManager from "toastify-react-native";
 import { SessionProvider, useSession } from "../lib/context";
 import { SplashScreenController } from "../splash";
 
@@ -40,6 +41,7 @@ export default function RootLayout() {
             <SplashScreenController />
             <RootNavigator />
           </SessionProvider>
+          <ToastManager position="bottom" />
           <StatusBar style="auto" />
         </ThemeProvider>
       </QueryClientProvider>

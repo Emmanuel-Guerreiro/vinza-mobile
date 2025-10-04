@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 
 interface LoginFormData {
   email: string;
@@ -36,8 +37,19 @@ export const LoginForm: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const response = await signIn(data);
-    router.replace(response.validado ? ROUTES["APP_TABS"] : ROUTES["VALIDATE"]);
+    try {
+      const response = await signIn(data);
+      router.replace(
+        response.validado ? ROUTES["APP_TABS"] : ROUTES["VALIDATE"],
+      );
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Error al iniciar sesión",
+        text2: "Email o contraseña no coinciden",
+      });
+    }
   };
 
   return (
