@@ -2,6 +2,7 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { useSession } from "@/lib/context";
+import { ApiError } from "@/lib/error";
 import { toTitleCase } from "@/lib/util";
 import {
   EVENTO_QUERY_KEY,
@@ -24,6 +25,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 const params = {
   page: 1,
   limit: 3,
@@ -54,7 +56,6 @@ export default function CrearRecorridoScreen() {
   );
   const handleCreateRecorrido = async () => {
     if (!session?.id || !instanciaEventoId) {
-      // eslint-disable-next-line no-console
       console.error("Missing session or instanciaEventoId");
       return;
     }
@@ -67,10 +68,20 @@ export default function CrearRecorridoScreen() {
       });
 
       // Navigate back or to success page
+      Toast.show({
+        type: "info",
+        text1: "Creado nuevo recorrido",
+        text2: "Se ha creado con el evento seleccionado",
+      });
       router.back();
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error creating reserva:", error);
+      const errorData = error as unknown as ApiError;
+      Toast.show({
+        type: "error",
+        text1: "Error al crear recorrido",
+        text2: errorData.message,
+      });
+      console.error("Error creating recorrido:", error);
     }
   };
 

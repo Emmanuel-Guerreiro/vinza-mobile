@@ -3,8 +3,7 @@ import { Colors } from "@/constants/colors";
 import { formatCurrency } from "@/lib/util";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { EstadoEventoEnum, Evento } from "../types";
-import { EventStatusBadge } from "./event-status-badge";
+import { Evento } from "../types";
 
 export function EventCard({
   evento,
@@ -34,9 +33,6 @@ export function EventCard({
         <View style={styles.eventHeader}>
           <View style={styles.titleContainer}>
             <Text style={styles.eventTitle}>{evento.nombre}</Text>
-            <EventStatusBadge
-              estado={evento.estado?.nombre as EstadoEventoEnum}
-            />
           </View>
           <Text style={styles.eventPrice}>{formatCurrency(evento.precio)}</Text>
         </View>

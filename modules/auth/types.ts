@@ -9,18 +9,20 @@ export const LoginRequestSchema = z.object({
   password: z.string().min(1, "Contraseña requerida"),
 });
 
+export const PasswordSchema = z
+  .string()
+  .min(8, "La contraseña debe tener al menos 8 caracteres")
+  .regex(/[A-Z]/, "La contraseña debe contener al menos una mayúscula")
+  .regex(/[a-z]/, "La contraseña debe contener al menos una minúscula")
+  .regex(/[0-9]/, "La contraseña debe contener al menos un número")
+  .regex(
+    /[^A-Za-z0-9]/,
+    "La contraseña debe contener al menos un caracter especial",
+  );
+
 export const RegisterRequestSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z
-    .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .regex(/[A-Z]/, "La contraseña debe contener al menos una mayúscula")
-    .regex(/[a-z]/, "La contraseña debe contener al menos una minúscula")
-    .regex(/[0-9]/, "La contraseña debe contener al menos un número")
-    .regex(
-      /[^A-Za-z0-9]/,
-      "La contraseña debe contener al menos un caracter especial",
-    ),
+  password: PasswordSchema,
   name: z.string().min(1, "Nombre requerido"),
 });
 

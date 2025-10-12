@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
@@ -7,14 +8,17 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { getFaqs } from "../api";
 import { Faq, FaqListParams } from "../types";
 
-const renderFaqItem = ({ item }: { item: Faq }) => (
+const renderFaqItem = ({ item, index }: { item: Faq; index: number }) => (
   <View style={styles.faqItem}>
-    <Text style={styles.question}>{item.question}</Text>
+    <Text style={styles.question}>
+      {index + 1}. {item.question}
+    </Text>
     <Text style={styles.answer}>{item.answer}</Text>
   </View>
 );
@@ -28,12 +32,14 @@ const renderEmpty = () => (
 );
 
 export function FaqsPage() {
+  const router = useRouter();
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["faqs"],
     queryFn: () => {
       const params: FaqListParams = {
         page: 1,
         limit: 100, // Get all FAQs at once
+        orderBy: "created_at:desc",
       };
       return getFaqs(params);
     },
@@ -60,6 +66,9 @@ export function FaqsPage() {
         <Text style={styles.errorText}>
           Error al cargar las preguntas frecuentes
         </Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          Volver
+        </TouchableOpacity>
       </View>
     );
   }

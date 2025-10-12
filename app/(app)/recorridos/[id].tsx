@@ -24,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 
 // Set dayjs locale to Spanish
 dayjs.locale("es");
@@ -85,27 +86,39 @@ export default function RecorridoScreen() {
     );
   }
 
+  const addEventosToRecorrido = () => {
+    router.push("/(app)/(tabs)/home?tab=eventos");
+    Toast.show({
+      type: "info",
+      text1: "Agrega nuevos eventos",
+    });
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <DetailHeader title={dateRange} />
 
       {/* Edit Section */}
       <View style={styles.editSection}>
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Editar recorrido</Text>
-        </TouchableOpacity>
+        {currentEstado?.nombre === EstadoRecorridoEnum.PENDIENTE && (
+          <TouchableOpacity style={styles.editButton}>
+            <Text style={styles.editButtonText}>Editar recorrido</Text>
+          </TouchableOpacity>
+        )}
         <View style={styles.headerRight}>
           <StatusBadge
             currentEstado={
               currentEstado?.nombre || EstadoRecorridoEnum.PENDIENTE
             }
           />
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push("/(app)/(tabs)/home?tab=eventos")}
-          >
-            <IconSymbol name="plus" size={20} color="white" />
-          </TouchableOpacity>
+          {currentEstado?.nombre === EstadoRecorridoEnum.PENDIENTE && (
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={addEventosToRecorrido}
+            >
+              <IconSymbol name="plus" size={20} color="white" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 

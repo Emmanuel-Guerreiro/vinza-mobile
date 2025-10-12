@@ -38,8 +38,6 @@ export const apiFetch = async (
       appEvents.emit("unauthorized");
     }
 
-    // eslint-disable-next-line no-console
-    console.log("ERROR -> ", error, "\n");
     throw error;
   }
   return response;
