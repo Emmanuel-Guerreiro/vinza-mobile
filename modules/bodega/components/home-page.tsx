@@ -31,7 +31,7 @@ export function BodegaHomePage() {
     queryFn: () =>
       getBodegas({
         page: 1,
-        limit: 1,
+        limit: 10,
         nombre: search,
       }),
     getNextPageParam: (lastPage) =>

@@ -64,7 +64,6 @@ export default function BodegaScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <NavigationHeader title={bodega.nombre} />
-
       <View style={styles.bodegaHeader}>
         <View style={styles.bodegaImageContainer}>
           <Image
@@ -89,27 +88,16 @@ export default function BodegaScreen() {
               <IconSymbol name="star.fill" size={12} color="#FFD700" />{" "}
             </Text>
           </View>
-
-          {bodega.sucursales && bodega.sucursales.length > 1 && (
-            <View style={styles.branchesInfo}>
-              <Text style={styles.branchesLabel}>
-                Sucursales: {bodega.sucursales.length}
-              </Text>
-            </View>
-          )}
         </View>
       </View>
 
       {/* Events Section */}
       <View style={styles.eventsSection}>
         <Text style={styles.eventsTitle}>Eventos disponibles</Text>
-
         {eventosLoading && <ActivityIndicator size="large" />}
-
         {!eventosLoading && (!eventos?.items || eventos.items.length === 0) && (
           <Text style={styles.noResults}>No hay eventos disponibles</Text>
         )}
-
         {eventos?.items?.map((evento: Evento) => (
           <EventCard hideBodegaName key={evento.id} evento={evento} />
         ))}

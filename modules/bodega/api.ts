@@ -9,9 +9,11 @@ export async function getBodegas(
   params: BodegaParams,
 ): Promise<PaginatedResponse<Bodega>> {
   const response = await apiFetch(
-    `${BODERGA_QUERY_KEY}?${filtersToSearchParams(params)}`,
+    `${BODERGA_QUERY_KEY}${filtersToSearchParams(params)}`,
   );
-  return response.json();
+  const data = await response.json();
+
+  return data;
 }
 
 export async function getBodega(id: Bodega["id"]): Promise<Bodega> {
