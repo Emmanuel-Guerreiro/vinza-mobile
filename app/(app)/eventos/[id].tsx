@@ -3,7 +3,7 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { ReservaChoiceModal } from "@/components/reserva-choice-modal";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Shadows, Spacing, TextSizes } from "@/constants/spacing";
 import { EVENTO_QUERY_KEY, getEvento, getEventos } from "@/modules/evento/api";
 import { EventCard } from "@/modules/evento/components/card";
 import { EstadoInstanciaEventoEnum, Evento } from "@/modules/evento/types";
@@ -134,40 +134,66 @@ export default function EventoScreen() {
         )}
         {isRecurrente && (
           <>
-            <Text style={styles.datesTitle}>Fechas para este evento</Text>
-            <View style={{ flexDirection: "column", gap: Spacing.xs }}>
+            <View style={styles.datesTitleContainer}>
+              <IconSymbol
+                name="calendar"
+                size={20}
+                color={Colors.light.primary}
+              />
+              <Text style={styles.datesTitle}>Fechas disponibles</Text>
+            </View>
+            <View style={styles.instancesContainer}>
               {evento?.instancias
                 ?.filter(
                   (instancia) =>
                     instancia.estado.nombre ===
                     EstadoInstanciaEventoEnum.ACTIVA,
                 )
-                ?.map((item) => (
+                ?.map((item, index) => (
                   <View key={item.id} style={styles.instanceCard}>
-                    <View style={{ flexDirection: "column", gap: Spacing.xs }}>
-                      <Text>Fecha</Text>
-                      <Text>
-                        {dayjs(item.fecha).format("DD/MM/YYYY HH:mm")}
+                    <View style={styles.instanceHeader}>
+                      <View style={styles.instanceNumberBadge}>
+                        <Text style={styles.instanceNumberText}>
+                          {index + 1}
+                        </Text>
+                      </View>
+                      <View style={styles.instanceDateContainer}>
+                        <View style={styles.dateRow}>
+                          <IconSymbol
+                            name="calendar"
+                            size={16}
+                            color={Colors.light.text.secondary}
+                          />
+                          <Text style={styles.instanceDateText}>
+                            {dayjs(item.fecha).format("DD/MM/YYYY")}
+                          </Text>
+                        </View>
+                        <View style={styles.timeRow}>
+                          <IconSymbol
+                            name="clock"
+                            size={16}
+                            color={Colors.light.text.secondary}
+                          />
+                          <Text style={styles.instanceTimeText}>
+                            {dayjs(item.fecha).format("HH:mm")}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.instanceReserveButton}
+                      onPress={() => handleReservar(item.id)}
+                      activeOpacity={0.8}
+                    >
+                      <IconSymbol
+                        name="plus.circle.fill"
+                        size={18}
+                        color={Colors.light.white}
+                      />
+                      <Text style={styles.instanceReserveButtonText}>
+                        Reservar
                       </Text>
-                    </View>
-                    <View style={styles.instanceButtonsContainer}>
-                      <TouchableOpacity
-                        style={styles.instanceReserveButton}
-                        onPress={() => handleReservar(item.id)}
-                      >
-                        <Text style={styles.instanceReserveButtonText}>
-                          Reservar fecha
-                        </Text>
-                      </TouchableOpacity>
-                      {/* <TouchableOpacity
-                        style={styles.instancePuntuarButton}
-                        onPress={() => router.push(`/puntuar/${item.id}`)}
-                      >
-                        <Text style={styles.instancePuntuarButtonText}>
-                          Puntuar
-                        </Text>
-                      </TouchableOpacity> */}
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 ))}
             </View>
@@ -273,52 +299,94 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.light.text.primary,
   },
-  datesTitle: {
-    fontSize: 16,
-    fontWeight: "medium",
-    textAlign: "center",
-    marginHorizontal: "auto",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.primary,
-    paddingBottom: Spacing.sm,
-    color: Colors.light.text.primary,
-    marginBottom: Spacing.sm,
-  },
-  instanceReserveButton: {
-    backgroundColor: Colors.light.primary,
-    borderRadius: 8,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    alignItems: "center",
-  },
-  instanceReserveButtonText: {
-    color: Colors.light.white,
-    fontSize: 12,
-  },
-  instancePuntuarButton: {
-    backgroundColor: Colors.light.white,
-    borderWidth: 1,
-    borderColor: Colors.light.primary,
-    borderRadius: 12,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    alignItems: "center",
-  },
-  instancePuntuarButtonText: {
-    color: Colors.light.primary,
-    fontSize: 12,
-  },
-  instanceButtonsContainer: {
+  datesTitleContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+    paddingBottom: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.gray.primary,
+  },
+  datesTitle: {
+    fontSize: TextSizes.lg,
+    fontWeight: "600",
+    color: Colors.light.text.primary,
+  },
+  instancesContainer: {
+    flexDirection: "column",
+    gap: Spacing.md,
   },
   instanceCard: {
-    backgroundColor: Colors.light.gray.primary,
-    padding: Spacing.md,
-    borderRadius: 10,
+    backgroundColor: Colors.light.white,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius["2xl"],
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    ...Shadows.md,
+    borderWidth: 1,
+    borderColor: Colors.light.gray.secondary,
+  },
+  instanceHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    flex: 1,
+  },
+  instanceNumberBadge: {
+    backgroundColor: Colors.light.primary,
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.full,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  instanceNumberText: {
+    color: Colors.light.white,
+    fontSize: TextSizes.sm,
+    fontWeight: "700",
+  },
+  instanceDateContainer: {
+    flexDirection: "column",
+    gap: Spacing.xs,
+    flex: 1,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  instanceDateText: {
+    fontSize: TextSizes.md,
+    fontWeight: "600",
+    color: Colors.light.text.primary,
+  },
+  instanceTimeText: {
+    fontSize: TextSizes.sm,
+    color: Colors.light.text.secondary,
+    fontWeight: "500",
+  },
+  instanceReserveButton: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    ...Shadows.sm,
+  },
+  instanceReserveButtonText: {
+    color: Colors.light.white,
+    fontSize: TextSizes.sm,
+    fontWeight: "600",
   },
   relatedContainer: {
     display: "flex",

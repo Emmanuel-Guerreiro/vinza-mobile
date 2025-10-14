@@ -14,6 +14,12 @@ export default function ProfileScreen() {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  const getInitials = (nombre?: string, apellido?: string): string => {
+    const firstInitial = nombre?.charAt(0)?.toUpperCase() || "";
+    const lastInitial = apellido?.charAt(0)?.toUpperCase() || "";
+    return `${firstInitial}${lastInitial}`;
+  };
+
   const handlePasswordSuccess = () => {
     setShowPasswordForm(false);
     setShowToast(true);
@@ -36,7 +42,11 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatar} />
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {getInitials(session?.nombre, session?.apellido)}
+          </Text>
+        </View>
         <View style={styles.headerInfo}>
           <Text style={styles.desdeLabel}>Desde:</Text>
           <Text style={styles.desdeValue}>
@@ -97,8 +107,16 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: Colors.light.gray.primary,
+    backgroundColor: Colors.light.primary,
     marginRight: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    color: Colors.light.white,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   headerInfo: {
     alignItems: "flex-end",
