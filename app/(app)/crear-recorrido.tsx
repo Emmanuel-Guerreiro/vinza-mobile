@@ -73,7 +73,7 @@ export default function CrearRecorridoScreen() {
         text1: "Creado nuevo recorrido",
         text2: "Se ha creado con el evento seleccionado",
       });
-      router.back();
+      router.push("/(app)/(tabs)/home?tab=recorridos");
     } catch (error) {
       const errorData = error as unknown as ApiError;
       Toast.show({
