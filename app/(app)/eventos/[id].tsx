@@ -89,7 +89,11 @@ export default function EventoScreen() {
         <Text style={styles.eventoName}>{evento?.nombre}</Text>
         <View style={styles.bodegaImageContainer}>
           <Image
-            source={{ uri: "https://picsum.photos/600/600" }}
+            source={{
+              uri:
+                evento?.multimedia?.[0]?.url ??
+                "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop",
+            }}
             style={styles.bodegaImage}
             resizeMode="contain"
           />
@@ -228,8 +232,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   bodegaImage: {
-    width: "95%",
-    height: 200,
+    width: "100%",
+    height: "auto",
+    aspectRatio: 16 / 9,
+    objectFit: "cover",
     borderRadius: 10,
   },
   buttonsContainer: {

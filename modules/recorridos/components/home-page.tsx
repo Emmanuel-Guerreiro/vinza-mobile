@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import React, { useMemo } from "react";
 import {
   ActivityIndicator,
@@ -33,7 +34,6 @@ export function RecorridosHomePage() {
 
   const recorridosItems = useMemo(() => {
     const items = data?.pages.flatMap((page) => page.items) || [];
-
     // Sort by status: PENDIENTE -> CONFIRMADO -> CANCELADO
     const statusOrder = {
       [EstadoRecorridoEnum.PENDIENTE]: 0,
@@ -42,7 +42,22 @@ export function RecorridosHomePage() {
     };
 
     return items.sort((a, b) => {
-      // Get the current status (assuming the last status in the array is the current one)
+      // Check if any reservation has a past date (comparing only day, not time)
+      const hasPastDateA =
+        a.reservas?.some((reserva) =>
+          dayjs(reserva?.instanciaEvento?.fecha).isBefore(dayjs(), "day"),
+        ) || false;
+
+      const hasPastDateB =
+        b.reservas?.some((reserva) =>
+          dayjs(reserva?.instanciaEvento?.fecha).isBefore(dayjs(), "day"),
+        ) || false;
+
+      // If one has past dates and the other doesn't, prioritize the one without past dates
+      if (hasPastDateA && !hasPastDateB) return 1;
+      if (!hasPastDateA && hasPastDateB) return -1;
+
+      // If both have past dates or both don't have past dates, sort by status
       const statusA = a.estados?.[a.estados.length - 1]?.nombre;
       const statusB = b.estados?.[b.estados.length - 1]?.nombre;
 

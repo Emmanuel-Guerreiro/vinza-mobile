@@ -7,17 +7,19 @@ export const UpdateUserSchema = z.object({
   apellido: z.string().optional(),
   email: z.string().email().optional(),
   fecha_nacimiento: z
-    .date()
-    .optional()
+    .date({
+      required_error: "La fecha de nacimiento es requerida",
+    })
     .refine(
       (date) =>
-        !date ||
-        dayjs(date).isBefore(dayjs()) ||
-        dayjs(date).isSame(dayjs(), "day"),
+        dayjs(date).isBefore(dayjs()) || dayjs(date).isSame(dayjs(), "day"),
       {
         message: "La fecha de nacimiento no puede ser en el futuro",
       },
-    ),
+    )
+    .refine((date) => dayjs().diff(dayjs(date), "year") >= 18, {
+      message: "Debes tener al menos 18 años para registrarte",
+    }),
   // roles omitted
 });
 

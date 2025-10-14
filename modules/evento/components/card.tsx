@@ -1,9 +1,13 @@
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { formatCurrency } from "@/lib/util";
+import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Evento } from "../types";
+const formatDate = (date: dayjs.Dayjs) => {
+  return date.format("DD/MM/YYYY HH:mm");
+};
 
 export function EventCard({
   evento,
@@ -18,7 +22,9 @@ export function EventCard({
     <View key={evento.id} style={styles.eventCard}>
       <Image
         source={{
-          uri: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop",
+          uri:
+            evento.multimedia?.[0]?.url ??
+            "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop",
         }}
         style={styles.eventImage}
         resizeMode="cover"
@@ -37,17 +43,19 @@ export function EventCard({
           <Text style={styles.eventPrice}>{formatCurrency(evento.precio)}</Text>
         </View>
 
-        <Text style={styles.eventDescription}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </Text>
+        <Text style={styles.eventDescription}>{evento.descripcion}</Text>
 
         <View style={styles.eventDetails}>
           <Text style={styles.eventDetail}>
             Dirección: {evento.sucursal?.direccion}
           </Text>
           <View style={styles.dateRatingContainer}>
-            <Text style={styles.eventDetail}>Fecha: 04/07/25</Text>
+            {evento.instancias?.[0]?.fecha && (
+              <Text style={styles.eventDetail}>
+                Próxima fecha:{" "}
+                {formatDate(dayjs(evento.instancias?.[0]?.fecha))}
+              </Text>
+            )}
             <View style={styles.ratingContainer}>
               {evento.valoracionMedia?.length && (
                 <>

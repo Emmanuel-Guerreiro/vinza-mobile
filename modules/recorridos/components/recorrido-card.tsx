@@ -5,6 +5,7 @@ import "dayjs/locale/es";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -45,6 +46,14 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
     });
   };
 
+  const multimedia = recorrido.reservas
+    .map(
+      (reserva) =>
+        reserva?.instanciaEvento?.evento?.multimedia?.[0]?.url ??
+        "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop",
+    )
+    .slice(0, 1);
+
   return (
     <View style={styles.card}>
       {/* Optimization Badge */}
@@ -56,15 +65,14 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
       )}
       {/* Header Images */}
       <View style={styles.headerImages}>
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.imageText}>🍷</Text>
-        </View>
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.imageText}>🥂</Text>
-        </View>
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.moreImagesText}>+2</Text>
-        </View>
+        {multimedia.map((url, idx) => (
+          <Image
+            source={{ uri: url }}
+            key={url + idx}
+            style={styles.headerImage}
+            resizeMode="cover"
+          />
+        ))}
       </View>
 
       {/* Trip Info */}
@@ -93,24 +101,24 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
         {groupedReservas.map((dayGroup) => (
           <View key={dayGroup.date} style={styles.daySection}>
             <Text style={styles.dayHeader}>{dayGroup.dayName}</Text>
-            {dayGroup.reservas.map((reserva) => (
+            {dayGroup?.reservas?.map((reserva) => (
               <View key={reserva.id} style={styles.activityCard}>
                 <View style={styles.activityInfo}>
                   <Text style={styles.activityTitle}>
-                    {reserva.instanciaEvento.evento?.nombre || "Evento"}
+                    {reserva?.instanciaEvento?.evento?.nombre || "Evento"}
                   </Text>
                   <View style={styles.activityDetails}>
                     <View style={styles.detailRow}>
                       <Text style={styles.detailIcon}>📍</Text>
                       <Text style={styles.detailText}>
-                        {reserva.instanciaEvento.evento?.sucursal?.nombre ||
+                        {reserva?.instanciaEvento?.evento?.sucursal?.nombre ||
                           "Ubicación"}
                       </Text>
                     </View>
                     <View style={styles.detailRow}>
                       <Text style={styles.detailIcon}>🕐</Text>
                       <Text style={styles.detailText}>
-                        {dayjs(reserva.instanciaEvento.fecha).format("HH:mm")}{" "}
+                        {dayjs(reserva?.instanciaEvento?.fecha).format("HH:mm")}{" "}
                         Hrs
                       </Text>
                     </View>
@@ -118,11 +126,11 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
                 </View>
                 <View style={styles.activityMeta}>
                   <Text style={styles.activityTime}>
-                    {dayjs(reserva.instanciaEvento.fecha).format("HH:mm")} Hrs
+                    {dayjs(reserva?.instanciaEvento?.fecha).format("HH:mm")} Hrs
                   </Text>
                   <Text style={styles.participants}>
-                    {reserva.cantidadGente}{" "}
-                    {reserva.cantidadGente === 1 ? "Persona" : "Personas"}
+                    {reserva?.cantidadGente}{" "}
+                    {reserva?.cantidadGente === 1 ? "Persona" : "Personas"}
                   </Text>
                 </View>
               </View>
@@ -206,6 +214,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 16,
     gap: 8,
+  },
+  headerImage: {
+    width: "100%",
+    height: 80,
+    borderRadius: 8,
   },
   imagePlaceholder: {
     width: 60,

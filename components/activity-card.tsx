@@ -21,7 +21,9 @@ export function ActivityCard({
     <View style={styles.activityCard}>
       <Image
         source={{
-          uri: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=100&h=80&fit=crop",
+          uri:
+            reserva.instanciaEvento.evento?.multimedia?.[0]?.url ??
+            "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=100&h=80&fit=crop",
         }}
         style={styles.activityImage}
         resizeMode="cover"

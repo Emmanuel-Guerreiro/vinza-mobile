@@ -35,7 +35,11 @@ export function RecorridoSelectionCard({
         {groupedReservas.slice(0, 3).map((dayGroup, index) => (
           <View key={dayGroup.date} style={styles.imageContainer}>
             <Image
-              source={{ uri: "https://picsum.photos/200/150" }}
+              source={{
+                uri:
+                  dayGroup.reservas[0].instanciaEvento.evento?.multimedia?.[0]
+                    ?.url ?? "https://picsum.photos/200/150",
+              }}
               style={styles.headerImage}
               resizeMode="cover"
             />

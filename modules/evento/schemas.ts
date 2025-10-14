@@ -36,6 +36,7 @@ export const EventoFilterSchema = z.object({
   precioMinimo: z.number().min(0).optional(),
   precioMaximo: z.number().min(0).optional(),
   bodegaId: z.number().optional(),
+  nombre: z.string().optional(),
 });
 
 export const createValoracionSchema = z.object({

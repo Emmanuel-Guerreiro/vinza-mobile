@@ -27,6 +27,7 @@ const defaultFilters: EventoParams = {
   page: 1,
   limit: 10,
   nombre: "",
+  fechaDesde: new Date().toISOString(),
 };
 
 export function EventoHomePage() {
@@ -49,6 +50,7 @@ export function EventoHomePage() {
         ...defaultFilters,
         ...filters,
         estadoId: estado?.id,
+        fechaDesde: filters.fechaDesde,
       },
     ],
     queryFn: () =>
@@ -92,7 +94,7 @@ export function EventoHomePage() {
           )}
         </View>
         {isLoading && <ActivityIndicator size="large" />}
-        {eventosItems ? (
+        {eventosItems && eventosItems.length > 0 ? (
           <VirtualizedList
             data={eventosItems}
             renderItem={({ item }: { item: Evento }) => (

@@ -19,7 +19,19 @@ export interface Evento {
   recurrencias?: RecurrenciaEvento[];
   valoracionMedia?: ValoracionMedia[];
   instancias?: InstanciaEvento[];
+  multimedia?: Multimedia[];
 }
+
+export type Multimedia = {
+  id: number;
+  url: string;
+  es_portada: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  eventoId: number;
+  tipoId: number;
+};
 
 export interface ValoracionMedia {
   cantidad_valoraciones: number;

@@ -32,7 +32,7 @@ export default function AuthScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "position" : undefined}
       >
         <View style={styles.content}>
           <View style={styles.avatarContainer}>

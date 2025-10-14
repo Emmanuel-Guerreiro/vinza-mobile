@@ -125,7 +125,10 @@ export default function CrearRecorridoScreen() {
 
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: "https://picsum.photos/600/400" }}
+            source={{
+              uri:
+                evento.multimedia?.[0]?.url ?? "https://picsum.photos/600/400",
+            }}
             style={styles.eventImage}
             resizeMode="cover"
           />
