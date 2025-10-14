@@ -1,7 +1,7 @@
 import { PaginationAndOrderParams } from "@/lib/pagination";
 
 export enum FaqRecipientsEnum {
-  USER = "user",
+  END = "END",
   ADMIN = "admin",
   BOTH = "both",
 }

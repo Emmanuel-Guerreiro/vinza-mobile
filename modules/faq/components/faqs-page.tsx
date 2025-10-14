@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { getFaqs } from "../api";
-import { Faq, FaqListParams } from "../types";
+import { Faq, FaqListParams, FaqRecipientsEnum } from "../types";
 
 const renderFaqItem = ({ item, index }: { item: Faq; index: number }) => (
   <View style={styles.faqItem}>
@@ -41,7 +41,14 @@ export function FaqsPage() {
         limit: 100, // Get all FAQs at once
         orderBy: "created_at:desc",
       };
-      return getFaqs(params);
+      return getFaqs(params).then((res) => {
+        return {
+          items: res.items.filter(
+            (faq) => faq.recipient.name === FaqRecipientsEnum.END,
+          ),
+          meta: res.meta,
+        };
+      });
     },
   });
 
