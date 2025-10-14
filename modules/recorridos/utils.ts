@@ -140,7 +140,8 @@ export function calculateTotalCost(reservas: Reserva[]): number {
   }
 
   return reservas.reduce(
-    (sum, reserva) => sum + parseFloat(reserva.precio.toString()),
+    (sum, reserva) =>
+      sum + parseFloat(reserva.precio.toString()) * +reserva.cantidadGente,
     0,
   );
 }
