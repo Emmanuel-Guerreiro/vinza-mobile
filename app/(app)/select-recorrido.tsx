@@ -59,7 +59,7 @@ export default function SelectRecorridoScreen() {
         type: "info",
         text1: "Evento agregado al recorrido",
       });
-      router.back();
+      router.push("/(app)/(tabs)/home?tab=recorridos");
     } catch (error) {
       const errorData = error as unknown as ApiError;
       Toast.show({
