@@ -4,6 +4,7 @@ import {
   createReservaSchema,
   findAllRecorridosParamsSchema,
   updateBookingSchema,
+  updateRecorridoNameSchema,
 } from "./schema";
 
 export enum EstadoRecorridoEnum {
@@ -18,6 +19,7 @@ export interface Recorrido {
   last_optimization: Date | null;
   userId: number;
   id: number;
+  name: string;
   reservas: Reserva[];
   estados: EstadoRecorrido[];
 }
@@ -53,3 +55,5 @@ export type RecorridoParams = z.infer<typeof findAllRecorridosParamsSchema>;
 export type UpdateBooking = z.infer<typeof updateBookingSchema>;
 
 export type CreateReserva = z.infer<typeof createReservaSchema>;
+
+export type UpdateRecorridoName = z.infer<typeof updateRecorridoNameSchema>;

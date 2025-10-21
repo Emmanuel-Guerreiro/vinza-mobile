@@ -1,6 +1,11 @@
 import { paginationAndOrderSchema } from "@/lib/pagination";
 import z from "zod";
-import { EstadoRecorridoEnum } from "./types";
+
+export enum EstadoRecorridoEnum {
+  PENDIENTE = "PENDIENTE",
+  CONFIRMADO = "CONFIRMADO",
+  CANCELADO = "CANCELADO",
+}
 
 const recorridoOrderByAttributes = ["id", "created_at", "deleted_at"];
 export const findAllRecorridosParamsSchema = paginationAndOrderSchema(
@@ -18,4 +23,9 @@ export const createReservaSchema = z.object({
   cantidadGente: z.coerce.number(),
   instanciaEventoId: z.coerce.number(),
   recorridoId: z.coerce.number().optional(),
+  name: z.string().optional(),
+});
+
+export const updateRecorridoNameSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
 });

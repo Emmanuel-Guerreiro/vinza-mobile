@@ -27,7 +27,7 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
   const router = useRouter();
 
   // Calculate date range and total days
-  const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
+  const { totalDays, groupedReservas, totalCost } = React.useMemo(
     () => calculateRecorridoDataWithLimit(recorrido?.reservas || [], 2),
     [recorrido?.reservas],
   );
@@ -77,7 +77,7 @@ export function RecorridoCard({ recorrido }: RecorridoCardProps) {
 
       {/* Trip Info */}
       <View style={styles.tripInfo}>
-        <Text style={styles.dateRange}>{dateRange}</Text>
+        <Text style={styles.dateRange}>{recorrido.name}</Text>
         <View style={styles.tripDetails}>
           <Text style={styles.totalCost}>
             Total:{" "}
