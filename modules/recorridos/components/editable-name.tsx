@@ -1,6 +1,7 @@
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { FontWeights, Spacing } from "@/constants/spacing";
+import { appEvents } from "@/lib/app-events";
 import { ApiError } from "@/lib/error";
 import { updateRecorridoName } from "@/modules/recorridos/api";
 import React, { useState } from "react";
@@ -54,6 +55,11 @@ export function EditableName({
     try {
       await updateRecorridoName(recorridoId, editName.trim());
       onNameUpdate(editName.trim());
+      // Emitir evento para revalidar data en otras tabs
+      appEvents.emit("recorrido:name-updated", {
+        recorridoId,
+        newName: editName.trim(),
+      });
       setIsEditing(false);
       Toast.show({
         type: "success",

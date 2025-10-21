@@ -3,6 +3,7 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { FontWeights, Spacing } from "@/constants/spacing";
+import { appEvents } from "@/lib/app-events";
 import { RECORRIDOS_QUERY_KEY, getRecorrido } from "@/modules/recorridos/api";
 import { CancelRecorridoModal } from "@/modules/recorridos/components/cancel-recorrido-modal";
 import { ConfirmRecorridoModal } from "@/modules/recorridos/components/confirm-recorrido-modal";
@@ -43,7 +44,11 @@ export default function RecorridoScreen() {
   const [confirmRecorridoModal, setConfirmRecorridoModal] = useState(
     confirm === "true" || false,
   );
-  const { data: recorrido, isLoading } = useQuery({
+  const {
+    data: recorrido,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: [RECORRIDOS_QUERY_KEY, id],
     queryFn: () => getRecorrido(Number(id)),
   });
@@ -55,6 +60,24 @@ export default function RecorridoScreen() {
       setRecorridoName(recorrido.name);
     }
   }, [recorrido?.name]);
+
+  // Escuchar eventos de actualización de nombre para revalidar data
+  useEffect(() => {
+    const handleRecorridoNameUpdate = (eventData: {
+      recorridoId: number;
+      newName: string;
+    }) => {
+      if (eventData.recorridoId === Number(id)) {
+        refetch();
+      }
+    };
+
+    appEvents.on("recorrido:name-updated", handleRecorridoNameUpdate);
+
+    return () => {
+      appEvents.off("recorrido:name-updated", handleRecorridoNameUpdate);
+    };
+  }, [id, refetch]);
 
   // Calculate date range and total days
   const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
