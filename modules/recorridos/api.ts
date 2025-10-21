@@ -59,3 +59,13 @@ export async function crearReserva(data: CreateReserva): Promise<void> {
     body: JSON.stringify(data),
   });
 }
+
+export async function updateRecorridoName(
+  id: number,
+  name: string,
+): Promise<void> {
+  await apiFetch(`${RECORRIDOS_QUERY_KEY}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ name }),
+  });
+}

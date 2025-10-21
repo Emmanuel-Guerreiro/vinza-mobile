@@ -6,12 +6,14 @@ import { StyleSheet, Text, View } from "react-native";
 interface DetailHeaderProps {
   title: string;
   fallbackRoute?: Href;
+  children?: React.ReactNode;
 }
 
-export function DetailHeader({ title }: DetailHeaderProps) {
+export function DetailHeader({ title, children }: DetailHeaderProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
+      {children}
     </View>
   );
 }

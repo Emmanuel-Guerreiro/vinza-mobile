@@ -3,11 +3,13 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/colors";
 import { FontWeights, Spacing } from "@/constants/spacing";
+import { appEvents } from "@/lib/app-events";
 import { RECORRIDOS_QUERY_KEY, getRecorrido } from "@/modules/recorridos/api";
 import { CancelRecorridoModal } from "@/modules/recorridos/components/cancel-recorrido-modal";
 import { ConfirmRecorridoModal } from "@/modules/recorridos/components/confirm-recorrido-modal";
 import { DeleteBookingModal } from "@/modules/recorridos/components/delete-booking-modal";
 import { DetailHeader } from "@/modules/recorridos/components/detail-header";
+import { EditableName } from "@/modules/recorridos/components/editable-name";
 import { StatusBadge } from "@/modules/recorridos/components/status-badge";
 import { UpdateBookingPeopleModal } from "@/modules/recorridos/components/update-booking-people";
 import { EstadoRecorridoEnum, Reserva } from "@/modules/recorridos/types";
@@ -16,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -42,10 +44,40 @@ export default function RecorridoScreen() {
   const [confirmRecorridoModal, setConfirmRecorridoModal] = useState(
     confirm === "true" || false,
   );
-  const { data: recorrido, isLoading } = useQuery({
+  const {
+    data: recorrido,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: [RECORRIDOS_QUERY_KEY, id],
     queryFn: () => getRecorrido(Number(id)),
   });
+  const [recorridoName, setRecorridoName] = useState(recorrido?.name || "");
+
+  // Update name when recorrido data is loaded
+  useEffect(() => {
+    if (recorrido?.name) {
+      setRecorridoName(recorrido.name);
+    }
+  }, [recorrido?.name]);
+
+  // Escuchar eventos de actualización de nombre para revalidar data
+  useEffect(() => {
+    const handleRecorridoNameUpdate = (eventData: {
+      recorridoId: number;
+      newName: string;
+    }) => {
+      if (eventData.recorridoId === Number(id)) {
+        refetch();
+      }
+    };
+
+    appEvents.on("recorrido:name-updated", handleRecorridoNameUpdate);
+
+    return () => {
+      appEvents.off("recorrido:name-updated", handleRecorridoNameUpdate);
+    };
+  }, [id, refetch]);
 
   // Calculate date range and total days
   const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
@@ -96,7 +128,19 @@ export default function RecorridoScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <DetailHeader title={dateRange} />
+      <DetailHeader title={recorridoName}>
+        <EditableName
+          name={recorridoName}
+          recorridoId={Number(id)}
+          onNameUpdate={setRecorridoName}
+          canEdit={currentEstado?.nombre === EstadoRecorridoEnum.PENDIENTE}
+        />
+      </DetailHeader>
+
+      {/* Date Range Section */}
+      <View style={styles.dateRangeSection}>
+        <Text style={styles.dateRangeText}>{dateRange}</Text>
+      </View>
 
       {/* Edit Section */}
       <View style={styles.editSection}>
@@ -220,6 +264,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.background,
     paddingBottom: Spacing["4xl"],
+  },
+  dateRangeSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
+  },
+  dateRangeText: {
+    fontSize: 16,
+    color: Colors.light.text.secondary,
+    fontWeight: FontWeights.medium,
   },
   editSection: {
     flexDirection: "row",
