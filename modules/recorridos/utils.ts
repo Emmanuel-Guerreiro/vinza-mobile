@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Linking } from "react-native";
 import { Reserva } from "./types";
 
 export interface GroupedReserva {
@@ -174,3 +175,15 @@ export function calculateRecorridoDataWithLimit(
     totalCost: calculateTotalCost(reservas),
   };
 }
+
+export const openRoute = (coords: { lat: number; lng: number }[]) => {
+  const origin = `${coords[0].lat},${coords[0].lng}`;
+  const destination = `${coords[coords.length - 1].lat},${coords[coords.length - 1].lng}`;
+  const waypoints = coords
+    .slice(1, -1)
+    .map((c) => `${c.lat},${c.lng}`)
+    .join("|");
+
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}`;
+  Linking.openURL(url);
+};
