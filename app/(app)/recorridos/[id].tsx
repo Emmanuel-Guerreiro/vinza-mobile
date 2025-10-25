@@ -11,7 +11,7 @@ import { DetailHeader } from "@/modules/recorridos/components/detail-header";
 import { StatusBadge } from "@/modules/recorridos/components/status-badge";
 import { UpdateBookingPeopleModal } from "@/modules/recorridos/components/update-booking-people";
 import { EstadoRecorridoEnum, Reserva } from "@/modules/recorridos/types";
-import { calculateRecorridoData } from "@/modules/recorridos/utils";
+import { calculateRecorridoData, openRoute } from "@/modules/recorridos/utils";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
@@ -32,6 +32,7 @@ dayjs.locale("es");
 export default function RecorridoScreen() {
   const { id, confirm } = useLocalSearchParams();
   const router = useRouter();
+
   const [deleteBookingModal, setDeleteBookingModal] = useState<
     Reserva["id"] | null
   >(null);
@@ -46,7 +47,6 @@ export default function RecorridoScreen() {
     queryKey: [RECORRIDOS_QUERY_KEY, id],
     queryFn: () => getRecorrido(Number(id)),
   });
-
   // Calculate date range and total days
   const { dateRange, totalDays, groupedReservas, totalCost } = React.useMemo(
     () => calculateRecorridoData(recorrido?.reservas || []),
@@ -61,6 +61,46 @@ export default function RecorridoScreen() {
     const reserva = recorrido?.reservas.find((r) => r.id === reservaId);
     if (reserva) {
       setUpdatePeopleModal(reserva);
+    }
+  };
+
+  const handleOptimizeRecorrido = () => {
+    router.push(`/(app)/recorridos/${id}/optimize`);
+  };
+
+  const handleOpenMap = () => {
+    if (!recorrido?.reservas || recorrido.reservas.length === 0) return;
+
+    // Sort reservas by instanciaEvento date
+    const sortedReservas = [...recorrido.reservas].sort((a, b) => {
+      const dateA = dayjs(a.instanciaEvento?.fecha);
+      const dateB = dayjs(b.instanciaEvento?.fecha);
+      return dateA.valueOf() - dateB.valueOf();
+    });
+
+    // Get sucursales in chronological order and filter only contiguous duplicates
+    const sucursales = sortedReservas
+      .map((reserva) => reserva.instanciaEvento?.evento?.sucursal)
+      .filter((sucursal) => sucursal?.latitude && sucursal?.longitude);
+
+    // Remove only contiguous duplicates
+    const filteredSucursales = sucursales.filter((sucursal, index) => {
+      if (index === 0) return true; // Always keep the first one
+
+      const previousSucursal = sucursales[index - 1];
+      return !(
+        sucursal?.latitude === previousSucursal?.latitude &&
+        sucursal?.longitude === previousSucursal?.longitude
+      );
+    });
+
+    const coords = filteredSucursales.map((sucursal) => ({
+      lat: sucursal!.latitude,
+      lng: sucursal!.longitude,
+    }));
+
+    if (coords.length > 0) {
+      openRoute(coords);
     }
   };
 
@@ -157,6 +197,10 @@ export default function RecorridoScreen() {
 
       {/* Action Buttons */}
       <View style={styles.actionButtonsContainer}>
+        <TouchableOpacity style={styles.mapButton} onPress={handleOpenMap}>
+          <IconSymbol name="map" size={16} color="white" />
+          <Text style={styles.mapButtonText}>Abrir mapa</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => setCancelRecorridoModal(true)}
@@ -165,7 +209,10 @@ export default function RecorridoScreen() {
         </TouchableOpacity>
         {currentEstado?.nombre === EstadoRecorridoEnum.PENDIENTE &&
           !recorrido.last_optimization && (
-            <TouchableOpacity style={styles.optimizeButton}>
+            <TouchableOpacity
+              style={styles.optimizeButton}
+              onPress={handleOptimizeRecorrido}
+            >
               <IconSymbol name="sparkles" size={16} color="white" />
               <Text style={styles.optimizeButtonText}>Optimizar</Text>
             </TouchableOpacity>
@@ -301,6 +348,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing["3xl"],
     gap: Spacing.sm,
+  },
+  mapButton: {
+    flex: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: 8,
+    backgroundColor: Colors.light.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.xs,
+  },
+  mapButtonText: {
+    fontSize: 16,
+    fontWeight: FontWeights.medium,
+    color: "white",
   },
   cancelButton: {
     flex: 1,

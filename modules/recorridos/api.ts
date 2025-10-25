@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { PaginatedResponse } from "@/lib/api/types";
 import { filtersToSearchParams } from "@/lib/util";
+import { InstanciaEvento } from "../evento/types";
 import {
   CreateReserva,
   Recorrido,
@@ -57,5 +58,28 @@ export async function crearReserva(data: CreateReserva): Promise<void> {
   await apiFetch(BOOKING_QUERY_KEY, {
     method: "POST",
     body: JSON.stringify(data),
+  });
+}
+
+export async function optimizeRecorrido(id: number): Promise<void> {
+  await apiFetch(`${RECORRIDOS_QUERY_KEY}/${id}/optimize`, {
+    method: "POST",
+  });
+}
+
+export async function getOptimizedRecorrido(id: number): Promise<{
+  originalInstances: number[];
+  instancesIds: string[];
+  instances: InstanciaEvento[];
+}> {
+  const response = await apiFetch(
+    `${RECORRIDOS_QUERY_KEY}/${id}/optimized-version`,
+  );
+  return response.json();
+}
+
+export async function applyOptimization(id: number): Promise<void> {
+  await apiFetch(`${RECORRIDOS_QUERY_KEY}/${id}/apply-optimization`, {
+    method: "POST",
   });
 }

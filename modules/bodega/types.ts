@@ -16,6 +16,8 @@ export interface Sucursal {
   aclaraciones?: string;
   bodegaId: number;
   bodega?: Bodega;
+  latitude: number;
+  longitude: number;
 }
 
 export type BodegaParams = z.infer<typeof BodegaParamsSchema>;
