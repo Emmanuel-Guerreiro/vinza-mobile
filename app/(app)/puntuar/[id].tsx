@@ -42,7 +42,6 @@ export default function PuntuarEventoScreen() {
       router.push("/(app)/(tabs)/home");
     },
     onError: (error) => {
-      // eslint-disable-next-line no-console
       console.error("Error al puntuar:", error);
     },
   });
