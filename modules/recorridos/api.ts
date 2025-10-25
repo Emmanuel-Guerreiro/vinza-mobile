@@ -83,3 +83,12 @@ export async function applyOptimization(id: number): Promise<void> {
     method: "POST",
   });
 }
+export async function updateRecorridoName(
+  id: number,
+  name: string,
+): Promise<void> {
+  await apiFetch(`${RECORRIDOS_QUERY_KEY}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ name }),
+  });
+}

@@ -64,6 +64,7 @@ export default function CrearRecorridoScreen() {
       await crearReserva({
         cantidadGente: peopleCount,
         instanciaEventoId: Number(instanciaEventoId),
+        name: `Recorrido ${dayjs().format("ddd D [de] MMMM")}`,
         // recorridoId is optional - when not provided, backend will create a new recorrido
       });
 

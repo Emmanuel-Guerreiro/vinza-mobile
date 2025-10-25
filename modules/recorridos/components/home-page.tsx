@@ -1,7 +1,8 @@
 import { Colors } from "@/constants/colors";
+import { appEvents } from "@/lib/app-events";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -31,6 +32,19 @@ export function RecorridosHomePage() {
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
+
+  // Escuchar eventos de actualización de nombre para revalidar data
+  useEffect(() => {
+    const handleRecorridoNameUpdate = () => {
+      refetch();
+    };
+
+    appEvents.on("recorrido:name-updated", handleRecorridoNameUpdate);
+
+    return () => {
+      appEvents.off("recorrido:name-updated", handleRecorridoNameUpdate);
+    };
+  }, [refetch]);
 
   const recorridosItems = useMemo(() => {
     const items = data?.pages.flatMap((page) => page.items) || [];
